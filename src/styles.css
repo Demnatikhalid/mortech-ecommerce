@@ -341,12 +341,18 @@ h3 { margin-bottom: 8px; }
   gap: 12px;
 }
 
-.category-branch strong {
+.category-branch strong,
+.category-section-link {
   display: block;
+  width: fit-content;
   margin-bottom: 6px;
   color: #3a3f49;
   font-size: 14px;
   font-weight: 800;
+}
+
+.category-section-link:hover {
+  color: var(--category-red);
 }
 
 .category-links {
