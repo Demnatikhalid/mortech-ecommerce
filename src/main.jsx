@@ -163,12 +163,12 @@ const products = [
 ];
 
 const quickCategories = [
-  ['Uniview Camera', 'Camera IP et NVR professionnels', Camera],
-  ['Hikvision Camera', 'Surveillance analogique et IP', ShieldCheck],
-  ['Domotique Sonoff', 'Modules connectes et capteurs', Home],
-  ['Automatisme Somfy', 'Moteurs et controle portails', Zap],
-  ['Pointage ZKTeco', 'Pointeuses et controle acces', CircleUserRound],
-  ['Ruijie sans fil', 'Wi-Fi entreprise et mesh', Network],
+  ['Uniview Camera', 'Camera IP et NVR professionnels', Camera, 'Videosurveillance'],
+  ['Hikvision Camera', 'Surveillance analogique et IP', ShieldCheck, 'Videosurveillance'],
+  ['Domotique Sonoff', 'Modules connectes et capteurs', Home, 'Automatisme & Domotique'],
+  ['Automatisme Somfy', 'Moteurs et controle portails', Zap, 'Automatisme & Domotique'],
+  ['Pointage ZKTeco', 'Pointeuses et controle acces', CircleUserRound, 'Controle Dacces et Pointeuse'],
+  ['Ruijie sans fil', 'Wi-Fi entreprise et mesh', Network, 'Equipement Reseaux'],
 ];
 
 const dynamicHeroWords = ['Videosurveillance', 'Reseaux', 'Domotique', 'Controle acces', 'Informatique'];
@@ -188,6 +188,20 @@ function getRoute() {
   return window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/$/, '');
 }
 
+function getLocationKey() {
+  return `${getRoute()}${window.location.search}`;
+}
+
+function getCategoryUrl(category) {
+  if (!category || category === 'Tous') return '/produits';
+  return `/produits?categorie=${encodeURIComponent(category)}`;
+}
+
+function normalizeProductCategory(category) {
+  if (category === 'Automatisme Et Domotique') return 'Automatisme & Domotique';
+  return category;
+}
+
 function Link({ to, children, className, onNavigate, ...props }) {
   function handleClick(event) {
     event.preventDefault();
@@ -201,7 +215,8 @@ function Link({ to, children, className, onNavigate, ...props }) {
 }
 
 function App() {
-  const [route, setRoute] = useState(getRoute);
+  const [locationKey, setLocationKey] = useState(getLocationKey);
+  const route = useMemo(() => getRoute(), [locationKey]);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [cart, setCart] = useState([]);
@@ -211,14 +226,20 @@ function App() {
   const [loginSent, setLoginSent] = useState(false);
 
   useEffect(() => {
-    const syncRoute = () => setRoute(getRoute());
+    const syncRoute = () => setLocationKey(getLocationKey());
     window.addEventListener('popstate', syncRoute);
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const categories = ['Tous', ...new Set(products.map((product) => product.category))];
+  const categories = useMemo(() => ['Tous', ...new Set(products.map((product) => product.category))], []);
   const cartCount = cart.reduce((total, item) => total + item.qty, 0);
   const cartTotal = cart.reduce((total, item) => total + item.price * item.qty, 0);
+
+  useEffect(() => {
+    if (route !== '/produits') return;
+    const requestedCategory = new URLSearchParams(window.location.search).get('categorie');
+    setActiveCategory(requestedCategory || 'Tous');
+  }, [route, locationKey]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -240,6 +261,18 @@ function App() {
     setIsCartOpen(true);
   }
 
+  function selectCategory(category) {
+    setActiveCategory(category);
+    if (route !== '/produits') return;
+
+    const nextUrl = getCategoryUrl(category);
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== nextUrl) {
+      window.history.pushState({}, '', nextUrl);
+      setLocationKey(getLocationKey());
+    }
+  }
+
   function updateQty(id, amount) {
     setCart((current) =>
       current
@@ -259,7 +292,7 @@ function App() {
   }
 
   function renderPage() {
-    const productProps = { categories, activeCategory, setActiveCategory, filteredProducts, addToCart };
+    const productProps = { categories, activeCategory, setActiveCategory: selectCategory, filteredProducts, addToCart };
     if (route === '/produits') {
       return <ProductsPage {...productProps} />;
     }
@@ -364,11 +397,6 @@ function HomePage({ productProps, isMenuOpen, setIsMenuOpen }) {
 function ProductsPage(props) {
   return (
     <>
-      <PageHero
-        eyebrow="Catalogue"
-        title="Tous les produits"
-        text="Parcourez les produits par categorie, recherchez une reference et ajoutez les articles disponibles au panier."
-      />
       <CategoryBrowser isMenuOpen setIsMenuOpen={() => {}} />
       <ProductsSection {...props} title="Catalogue produits" />
     </>
@@ -553,13 +581,21 @@ function CategoryBrowser({ isMenuOpen, setIsMenuOpen }) {
         <div className="category-tree">
           {categoryGroups.map((group) => (
             <article className="category-group" key={group.name}>
-              <h3><ChevronDown size={15} />{group.name}</h3>
+              <h3>
+                <Link to={getCategoryUrl(normalizeProductCategory(group.name))}>
+                  <ChevronDown size={15} />{group.name}
+                </Link>
+              </h3>
               <div className="category-branches">
                 {group.sections.map((section) => (
                   <div className="category-branch" key={section.name}>
                     <strong>{section.name}</strong>
                     <div className="category-links">
-                      {section.links.map((link) => <Link to="/produits" key={link}>{link}</Link>)}
+                      {section.links.map((link) => (
+                        <Link to={getCategoryUrl(normalizeProductCategory(group.name))} key={link}>
+                          {link}
+                        </Link>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -580,8 +616,8 @@ function QuickCategories() {
         <Link to="/produits">Tous les produits</Link>
       </div>
       <div className="quick-grid">
-        {quickCategories.map(([title, text, Icon]) => (
-          <Link to="/produits" className="quick-card" key={title}>
+        {quickCategories.map(([title, text, Icon, category]) => (
+          <Link to={getCategoryUrl(category)} className="quick-card" key={title}>
             <Icon size={24} /><strong>{title}</strong><span>{text}</span>
           </Link>
         ))}
@@ -592,12 +628,13 @@ function QuickCategories() {
 
 function ProductsSection({ categories, activeCategory, setActiveCategory, filteredProducts, addToCart, limit, title = 'Produits populaires' }) {
   const visibleProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const visibleCategories = categories.includes(activeCategory) ? categories : [...categories, activeCategory];
   return (
     <section className="products-section" id="produits">
       <div className="section-heading">
         <div><span className="eyebrow">Boutique</span><h2>{title}</h2></div>
         <div className="tabs" role="tablist" aria-label="Filtrer produits">
-          {categories.map((category) => (
+          {visibleCategories.map((category) => (
             <button className={category === activeCategory ? 'active' : ''} key={category} onClick={() => setActiveCategory(category)}>
               {category}
             </button>
