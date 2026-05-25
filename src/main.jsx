@@ -29,11 +29,46 @@ import {
   Zap,
 } from 'lucide-react';
 import logo from './assets/mortech-logo-cropped.png';
-import cameraAnalogImage from './assets/products/camera-analog.png';
-import cameraIpImage from './assets/products/camera-ip.png';
-import dvrImage from './assets/products/dvr.png';
-import nvrImage from './assets/products/nvr.png';
-import videophoneImage from './assets/products/videophone.png';
+import ramMemoryImage from './assets/products/Memoire RAM DDR4 8GB 3200MHz.jpg';
+import sandiskSsdImage from './assets/products/SSD SATA 480GB pour ordinateur portable.webp';
+import portableDriveImage from './assets/products/Disque dur portable externe 2TB USB 3.0.webp';
+import wdHddImage from './assets/products/Disque dur HDD 1TB SATA 3.5 pouces.webp';
+import hikvisionTurboPtzImage from './assets/products/Hikvision Turbo HD PTZ SD2A500HB-GN-AW-PV-S2.webp';
+import hikvisionWifiRangerImage from './assets/products/Hikvision Camera IP Wi-Fi Ranger.jpg';
+import hikvisionBulletImage from './assets/products/Camera IP Hikvision Bullet 4MP Lite Full-color.webp';
+import cameraAnalogImage from './assets/products/Camera Analogique 5MP IR 40m Bullet DS-2CE10KF0T-LFS.webp';
+import dvrImage from './assets/products/DVR 2MP 4 channel DS-7204HGHI-M1.webp';
+import nvrImage from './assets/products/NVR Hikvision 8 canaux PoE pour camera IP.webp';
+import videophoneImage from './assets/products/DS-KIS212-4-Wire-HD-Video-Intercom-Kit-Hikvision-1-min.webp';
+import dahuaBulletImage from './assets/products/Dahua Camera IP Bullet 4MP PoE Full-color Network.webp';
+import dahuaDomeImage from './assets/products/Dahua Camera IP Dome 2MP Wide View Night Vision.webp';
+import dahuaNvrImage from './assets/products/Dahua NVR 8 canaux PoE Resolution 4MP.png';
+import dahuaXvrImage from './assets/products/Dahua XVR 4MP 8 canaux DVR-NVR Hybride.webp';
+import dahuaVideophoneImage from './assets/products/Dahua Videophone IP 7 pouces Ecran Tactile.webp';
+import dahuacameraAnalogImage from './assets/products/Dahua Camera Analogique 5MP Turret IR 40m.jpg';
+import Armoireinformatiqueetanche from './assets/products/Armoire informatique etanche murale 12U IP65.webp';
+import Armoireinformatique from './assets/products/Armoire informatique reseau 19 pouces 9U.jpg';
+import Plateaufixe from './assets/products/Plateau fixe et multiprise pour armoire reseau.webp';
+import switchTpLinkImage from './assets/products/Switch TP-Link Gigabit 8 ports metal.jpeg';
+import switchPoeImage from './assets/products/Switch PoE 8 ports pour cameras IP.webp';
+import switch8PortImage from './assets/products/Switch reseau 8 ports Gigabit non manageable.png';
+import switch16PortImage from './assets/products/Switch 16 ports Gigabit rackable.webp';
+import switch24PortImage from './assets/products/Switch 24 port.jpeg';
+import somfyTahomaImage from './assets/products/Box domotique Somfy TaHoma Switch.jpg';
+import tuyaSwitchImage from './assets/products/Interrupteur intelligent Tuya Wi-Fi tactile.webp';
+import shellyRelayImage from './assets/products/Module relais Shelly Plus 1 Wi-Fi.png';
+import akuvoxMonitorImage from './assets/products/Moniteur interieur Akuvox pour maison connectee.jpg';
+import sonoffModuleImage from './assets/products/Sonoff 4CH Pro R3 module domotique.webp';
+import hikvisionAccessControlImage from './assets/products/hikvision-access-control-ds-k1t804amf-terminal-de-controle-d-acces-presence-avec-ecran-et-clavier.jpg';
+import smartLockImage from './assets/products/Serrure intelligente connectee avec clavier et badge.webp';
+import pointeuseHikvisionImage from './assets/products/Pointeuse Hikvision biometrie visage et badge.webp';
+import pointeuseZktecoImage from './assets/products/Pointeuse ZKTeco biometrie empreinte et badge.jpeg';
+import kitAlarmeAjaxImage from './assets/products/Kit alarme Ajax Hub avec detecteur mouvemen.webp';
+import detecteurIntrusionHikvisionImage from './assets/products/Detecteur intrusion Hikvision sans fil PIR.webp';
+import cableAlarmeImage from './assets/products/Cable alarme 6 conducteurs pour systeme intrusion.jpeg';
+import alarmeAutonomeImage from './assets/products/Alarme autonome avec sirene integree et detecteur.webp';
+import kitAlarmeDahuaImage from './assets/products/Kit alarme Dahua sans fil avec sirene et detecteur.webp';
+import cableIncendieImage from './assets/products/Cable incendie CR1 rouge 2 conducteurs.jpeg';
 import './styles.css';
 
 const categoryGroups = [
@@ -46,9 +81,8 @@ const categoryGroups = [
   {
     name: 'Videosurveillance',
     sections: [
-      { name: 'Hikvision', links: ['Camera Analog', 'Camera IP', 'DVR', 'NVR', 'Videophone'] },
-      { name: 'Dahua', links: ['Camera Analog', 'Camera IP', 'XVR', 'NVR', 'Videophone'] },
-      { name: 'Accessoires de camera', links: ['Cable Coaxial', 'Boites de jonction', 'Support de camera', "Bloc d'alimentation"] },
+      { name: 'Hikvision', links: ['Camera Analog Hikvision', 'Camera IP Hikvision', 'DVR Hikvision', 'NVR Hikvision', 'Videophone Hikvision'] },
+      { name: 'Dahua', links: ['Camera Analog Dahua', 'Camera IP Dahua', 'XVR Dahua', 'NVR Dahua', 'Videophone Dahua'] },
     ],
   },
   {
@@ -59,10 +93,9 @@ const categoryGroups = [
     ],
   },
   {
-    name: 'Automatisme Et Domotique',
+    name: 'Domotique',
     sections: [
       { name: 'Domotique', links: ['TAHOMA SOMFY', 'AKUVOX', 'Tuya', 'Sonoff', 'Shelly'] },
-      { name: 'Automatisme', links: ['BFT', 'Tringles a rideaux motorise', 'NICE', 'Selecteur', 'Porte Vitree'] },
     ],
   },
   {
@@ -86,40 +119,73 @@ const products = [
     id: 1,
     brand: 'Dahua',
     category: 'Videosurveillance',
-    subcategory: 'Camera IP',
-    name: 'Dahua Technology Lite SD2A500HB-GN-AW-PV-S2',
-    price: 6000,
-    badge: 'PTZ Wi-Fi',
-    image: cameraIpImage,
-    stock: true,
-  },
-  {
-    id: 2,
-    brand: 'Dahua',
-    category: 'Videosurveillance',
-    subcategory: 'Camera IP',
-    name: 'Camera IP Wi-Fi Ranger 2 IPC-A22EP-G',
-    price: 384,
-    badge: 'Best seller',
-    image: cameraIpImage,
+    subcategory: 'Camera IP Dahua',
+    name: 'Dahua Camera IP Bullet 4MP PoE Full-color Network',
+    price: 680,
+    badge: '4MP PoE',
+    image: dahuaBulletImage,
     stock: true,
   },
   {
     id: 3,
     brand: 'Dahua',
     category: 'Videosurveillance',
-    subcategory: 'Camera IP',
-    name: 'Camera IP Dahua Bullet 4MP Lite Full-color',
-    price: 624,
-    badge: '4MP',
-    image: cameraIpImage,
+    subcategory: 'Camera IP Dahua',
+    name: 'Dahua Camera IP Dome 2MP Wide View Night Vision',
+    price: 520,
+    badge: '2MP Dome',
+    image: dahuaDomeImage,
     stock: true,
   },
   {
     id: 4,
+    brand: 'Dahua',
+    category: 'Videosurveillance',
+    subcategory: 'Camera Analog Dahua',
+    name: 'Dahua Camera Analogique 5MP Turret IR 40m',
+    price: 450,
+    badge: 'IR 40m',
+    image: dahuacameraAnalogImage,
+    stock: true,
+  },
+  {
+    id: 5,
     brand: 'Hikvision',
     category: 'Videosurveillance',
-    subcategory: 'Camera Analog',
+    subcategory: 'Camera IP Hikvision',
+    name: 'Hikvision Turbo HD PTZ SD2A500HB-GN-AW-PV-S2',
+    price: 6000,
+    badge: 'PTZ Wi-Fi',
+    image: hikvisionTurboPtzImage,
+    stock: true,
+  },
+  {
+    id: 9,
+    brand: 'Hikvision',
+    category: 'Videosurveillance',
+    subcategory: 'Camera IP Hikvision',
+    name: 'Hikvision Camera IP Wi-Fi Ranger 2 IPC-A22EP-G',
+    price: 384,
+    badge: 'Best seller',
+    image: hikvisionWifiRangerImage,
+    stock: true,
+  },
+  {
+    id: 21,
+    brand: 'Hikvision',
+    category: 'Videosurveillance',
+    subcategory: 'Camera IP Hikvision',
+    name: 'Camera IP Hikvision Bullet 4MP Lite Full-color',
+    price: 624,
+    badge: '4MP',
+    image: hikvisionBulletImage,
+    stock: true,
+  },
+  {
+    id: 22,
+    brand: 'Hikvision',
+    category: 'Videosurveillance',
+    subcategory: 'Camera Analog Hikvision',
     name: 'Camera Analogique 5MP IR 40m Bullet DS-2CE10KF0T-LFS',
     price: 420,
     badge: 'IR 40m',
@@ -127,10 +193,10 @@ const products = [
     stock: true,
   },
   {
-    id: 5,
+    id: 23,
     brand: 'Hikvision',
     category: 'Videosurveillance',
-    subcategory: 'DVR',
+    subcategory: 'DVR Hikvision',
     name: 'DVR 2MP 4 channel DS-7204HGHI-M1',
     price: 546,
     badge: 'DVR',
@@ -160,30 +226,30 @@ const products = [
   {
     id: 8,
     brand: 'Sonoff',
-    category: 'Automatisme & Domotique',
+    category: 'Domotique',
     subcategory: 'Sonoff',
     name: 'Sonoff 4CH Pro R3 module domotique',
     price: 395,
     badge: 'Smart home',
-    image: 'https://disismaroc.com/storage/products/145/591/disismaroc-sonoff-4ch-pro-r3-4chr3--1743514131-6708.png',
-    stock: true,
-  },
-  {
-    id: 9,
-    brand: 'Uniview',
-    category: 'Videosurveillance',
-    subcategory: 'Camera IP',
-    name: 'Camera IP Uniview Bullet 4MP vision nocturne',
-    price: 690,
-    badge: 'IP 4MP',
-    image: cameraIpImage,
+    image: sonoffModuleImage,
     stock: true,
   },
   {
     id: 10,
+    brand: 'Dahua',
+    category: 'Videosurveillance',
+    subcategory: 'NVR Dahua',
+    name: 'Dahua NVR 8 canaux PoE Resolution 4MP',
+    price: 1380,
+    badge: 'NVR 8CH PoE',
+    image: dahuaNvrImage,
+    stock: true,
+  },
+  {
+    id: 24,
     brand: 'Hikvision',
     category: 'Videosurveillance',
-    subcategory: 'NVR',
+    subcategory: 'NVR Hikvision',
     name: 'NVR Hikvision 8 canaux PoE pour camera IP',
     price: 1250,
     badge: 'NVR PoE',
@@ -191,29 +257,62 @@ const products = [
     stock: true,
   },
   {
-    id: 11,
+    id: 25,
+    brand: 'Dahua',
+    category: 'Videosurveillance',
+    subcategory: 'XVR Dahua',
+    name: 'Dahua XVR 4MP 8 canaux DVR/NVR Hybride',
+    price: 890,
+    badge: 'Hybride 8CH',
+    image: dahuaXvrImage,
+    stock: true,
+  },
+  {
+    id: 26,
+    brand: 'Hikvision',
+    category: 'Videosurveillance',
+    subcategory: 'Videophone Hikvision',
+    name: 'Videophone IP ecran tactile 7 pouces avec interphone',
+    price: 1850,
+    badge: 'Videophone',
+    image: videophoneImage,
+    stock: true,
+  },
+  {
+    id: 27,
+    brand: 'Dahua',
+    category: 'Videosurveillance',
+    subcategory: 'Videophone Dahua',
+    name: 'Dahua Videophone IP 7 pouces Ecran Tactile',
+    price: 2150,
+    badge: 'Videophone 7"',
+    image: dahuaVideophoneImage,
+    stock: true,
+  },
+  {
+    id: 28,
     brand: 'ZKTeco',
     category: 'Controle Dacces et Pointeuse',
     subcategory: 'Pointeuse ZKTeco',
     name: 'Pointeuse ZKTeco biometrie empreinte et badge',
     price: 1450,
     badge: 'Pointage',
-    image: 'https://zkteco.technology/wp-content/uploads/2022/01/c00444fc2e4cb4d4f513af79ca6e1fe3.png',
+    image: pointeuseZktecoImage,
     stock: true,
   },
   {
-    id: 12,
+    id: 29,
     brand: 'Hikvision',
     category: 'Controle Dacces et Pointeuse',
     subcategory: "Controle d'acces hikvision",
     name: "Terminal controle d'acces Hikvision badge RFID",
     price: 1180,
     badge: 'RFID',
-    image: 'https://www.bhphotovideo.com/cdn-cgi/image/fit%3Dscale-down%2Cwidth%3D500%2Cquality%3D95/https%3A//www.bhphotovideo.com/images/images500x500/hikvision_ds_k1t502dbwx_c_access_control_terminal_1715868963_1753179.jpg',
+    image: hikvisionAccessControlImage,
     stock: true,
   },
   {
-    id: 13,
+    id: 30,
     brand: 'Dahua',
     category: 'Controle Dacces et Pointeuse',
     subcategory: "Controle D'acces Dahua",
@@ -224,29 +323,29 @@ const products = [
     stock: true,
   },
   {
-    id: 14,
+    id: 31,
     brand: 'Ajax',
     category: 'Securite',
     subcategory: 'Alarme Ajax',
     name: 'Kit alarme Ajax Hub avec detecteur mouvement',
     price: 2890,
     badge: 'Alarme',
-    image: 'https://media1.lisintec.com/1576-superlarge_default/ajax-starterkit-cam-with-motioncam-detector-white-color.jpg',
+    image: kitAlarmeAjaxImage,
     stock: true,
   },
   {
-    id: 15,
+    id: 32,
     brand: 'Hikvision',
     category: 'Securite',
     subcategory: 'ALARME HIKVISION',
     name: 'Detecteur intrusion Hikvision sans fil PIR',
     price: 390,
     badge: 'Intrusion',
-    image: 'https://www.ctccommunications.com.au/cdn/shop/products/Hikvison-Wireless-PIR-Detector-DS-PDP15P-EG2-WB_1_ba917418-9201-478e-973f-3447445c2683_600x600.jpg?v=1752449306',
+    image: detecteurIntrusionHikvisionImage,
     stock: true,
   },
   {
-    id: 16,
+    id: 33,
     brand: 'Nugelec',
     category: 'Securite',
     subcategory: 'Incendie Nugelec',
@@ -257,62 +356,51 @@ const products = [
     stock: true,
   },
   {
-    id: 17,
-    brand: 'Hikvision',
-    category: 'Videosurveillance',
-    subcategory: 'Videophone',
-    name: 'Videophone IP ecran tactile 7 pouces avec interphone',
-    price: 1850,
-    badge: 'Videophone',
-    image: videophoneImage,
-    stock: true,
-  },
-  {
-    id: 18,
+    id: 34,
     brand: 'Alarm Cable',
     category: 'Securite',
     subcategory: 'Cable alarm',
     name: 'Cable alarme 6 conducteurs pour systeme intrusion',
     price: 180,
     badge: 'Cable alarm',
-    image: 'https://m.media-amazon.com/images/I/61tdfycQFGL._AC_SL1500_.jpg',
+    image: cableAlarmeImage,
     stock: true,
   },
   {
-    id: 19,
+    id: 35,
     brand: 'Dahua',
     category: 'Securite',
     subcategory: 'Alarme Dahua',
     name: 'Kit alarme Dahua sans fil avec sirene et detecteur',
     price: 1690,
     badge: 'Dahua',
-    image: 'https://www.dynamic-cctv.com/media/catalog/product/cache/befdb3aa601699c68ab8abcf39fb0fd9/a/r/arc3000h-w2_4.jpg',
+    image: kitAlarmeDahuaImage,
     stock: true,
   },
   {
-    id: 20,
+    id: 36,
     brand: 'Autonome',
     category: 'Securite',
     subcategory: 'Alarme Autonome',
     name: 'Alarme autonome avec sirene integree et detecteur',
     price: 590,
     badge: 'Autonome',
-    image: 'https://m.media-amazon.com/images/I/61dp7ES21YL._AC_SL1500_.jpg',
+    image: alarmeAutonomeImage,
     stock: true,
   },
   {
-    id: 21,
+    id: 37,
     brand: 'Fire Cable',
     category: 'Securite',
     subcategory: 'Cable incendie',
     name: 'Cable incendie CR1 rouge 2 conducteurs',
     price: 220,
     badge: 'Cable feu',
-    image: 'https://m.media-amazon.com/images/I/61tdfycQFGL._AC_SL1500_.jpg',
+    image: cableIncendieImage,
     stock: true,
   },
   {
-    id: 22,
+    id: 38,
     brand: 'Nugelec',
     category: 'Securite',
     subcategory: 'Incendie Adressable',
@@ -323,7 +411,7 @@ const products = [
     stock: true,
   },
   {
-    id: 23,
+    id: 39,
     brand: 'Nugelec',
     category: 'Securite',
     subcategory: 'Incendie conventionnelle',
@@ -334,7 +422,7 @@ const products = [
     stock: true,
   },
   {
-    id: 24,
+    id: 40,
     brand: 'Securite Incendie',
     category: 'Securite',
     subcategory: 'Alarme incendie',
@@ -345,304 +433,150 @@ const products = [
     stock: true,
   },
   {
-    id: 25,
-    brand: 'Mortech',
-    category: 'Videosurveillance',
-    subcategory: 'Cable Coaxial',
-    name: 'Cable coaxial RG59 pour camera analogique',
-    price: 260,
-    badge: 'Coaxial',
-    image: 'https://m.media-amazon.com/images/I/61tdfycQFGL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 26,
-    brand: 'Dahua',
-    category: 'Videosurveillance',
-    subcategory: 'Boites de jonction',
-    name: 'Boite de jonction etanche pour camera bullet',
-    price: 95,
-    badge: 'Jonction',
-    image: 'https://m.media-amazon.com/images/I/51-SNFHrMZL._AC_SL1000_.jpg',
-    stock: true,
-  },
-  {
-    id: 27,
-    brand: 'Hikvision',
-    category: 'Videosurveillance',
-    subcategory: 'Support de camera',
-    name: 'Support mural orientable pour camera dome',
-    price: 120,
-    badge: 'Support',
-    image: 'https://m.media-amazon.com/images/I/61K92M+rYcL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 28,
-    brand: 'Mortech',
-    category: 'Videosurveillance',
-    subcategory: "Bloc d'alimentation",
-    name: "Bloc d'alimentation 12V 2A pour camera CCTV",
-    price: 75,
-    badge: '12V',
-    image: 'https://m.media-amazon.com/images/I/61Rtb3gyugL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 29,
-    brand: 'Western Digital',
-    category: 'Materiel Informatique',
-    subcategory: 'HDD',
-    name: 'Disque dur HDD 1TB SATA 3.5 pouces',
-    price: 520,
-    badge: '1TB',
-    image: 'https://m.media-amazon.com/images/I/71YPmQP7gUL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 30,
-    brand: 'SanDisk',
-    category: 'Materiel Informatique',
-    subcategory: 'Cartes memoire',
-    name: 'Carte memoire microSD 128GB classe 10',
-    price: 145,
-    badge: '128GB',
-    image: 'https://m.media-amazon.com/images/I/617NtexaW2L._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 31,
-    brand: 'Seagate',
-    category: 'Materiel Informatique',
-    subcategory: 'Stockage portable',
-    name: 'Disque dur portable externe 2TB USB 3.0',
-    price: 790,
-    badge: 'Portable',
-    image: 'https://m.media-amazon.com/images/I/71Q7QPS-2vL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 32,
-    brand: 'Kingston',
-    category: 'Materiel Informatique',
-    subcategory: 'SSDs',
-    name: 'SSD SATA 480GB pour ordinateur portable',
-    price: 390,
-    badge: 'SSD',
-    image: 'https://m.media-amazon.com/images/I/71rlC6qvCpL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 33,
-    brand: 'Crucial',
-    category: 'Materiel Informatique',
-    subcategory: 'RAM',
-    name: 'Memoire RAM DDR4 8GB 3200MHz',
-    price: 290,
-    badge: 'DDR4',
-    image: 'https://m.media-amazon.com/images/I/61O45C5qASL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 34,
+    id: 45,
     brand: 'Linkbasic',
     category: 'Equipement Reseaux',
     subcategory: 'Armoire Informatique Etanche',
     name: 'Armoire informatique etanche murale 12U IP65',
     price: 2450,
     badge: 'IP65',
-    image: 'https://m.media-amazon.com/images/I/61UBFv91yHL._AC_SL1500_.jpg',
+    image: Armoireinformatiqueetanche,
     stock: true,
   },
   {
-    id: 35,
+    id: 46,
     brand: 'Digitus',
     category: 'Equipement Reseaux',
     subcategory: 'Armoire Informatique',
     name: 'Armoire informatique reseau 19 pouces 9U',
     price: 1550,
     badge: '19 pouces',
-    image: 'https://m.media-amazon.com/images/I/61Vh91z0pWL._AC_SL1500_.jpg',
+    image: Armoireinformatique,
     stock: true,
   },
   {
-    id: 36,
+    id: 47,
     brand: 'Mortech',
     category: 'Equipement Reseaux',
     subcategory: "Accessoires d'Armoire",
     name: 'Plateau fixe et multiprise pour armoire reseau',
     price: 320,
     badge: 'Accessoire',
-    image: 'https://m.media-amazon.com/images/I/61eRsQJSozL._AC_SL1500_.jpg',
+    image: Plateaufixe,
     stock: true,
   },
   {
-    id: 37,
+    id: 48,
     brand: 'TP-Link',
     category: 'Equipement Reseaux',
     subcategory: 'Switch TP-Link',
     name: 'Switch TP-Link Gigabit 8 ports metal',
     price: 290,
     badge: 'TP-Link',
-    image: 'https://m.media-amazon.com/images/I/61bY6HfBqKL._AC_SL1500_.jpg',
+    image: switchTpLinkImage,
     stock: true,
   },
   {
-    id: 38,
+    id: 49,
     brand: 'Ruijie Reyee',
     category: 'Equipement Reseaux',
     subcategory: 'Switch PoE',
     name: 'Switch PoE 8 ports pour cameras IP',
     price: 890,
     badge: 'PoE',
-    image: 'https://m.media-amazon.com/images/I/61qXV1i58wL._AC_SL1500_.jpg',
+    image: switchPoeImage,
     stock: true,
   },
   {
-    id: 39,
+    id: 50,
     brand: 'D-Link',
     category: 'Equipement Reseaux',
     subcategory: 'Switch 8 port',
     name: 'Switch reseau 8 ports Gigabit non manageable',
     price: 260,
     badge: '8 ports',
-    image: 'https://m.media-amazon.com/images/I/61sx+XuiOFL._AC_SL1500_.jpg',
+    image: switch8PortImage,
     stock: true,
   },
   {
-    id: 40,
+    id: 51,
     brand: 'TP-Link',
     category: 'Equipement Reseaux',
     subcategory: 'Switch 16 port',
     name: 'Switch 16 ports Gigabit rackable',
     price: 760,
     badge: '16 ports',
-    image: 'https://m.media-amazon.com/images/I/61w3fPC6dIL._AC_SL1500_.jpg',
+    image: switch16PortImage,
     stock: true,
   },
   {
-    id: 41,
+    id: 52,
     brand: 'Cisco',
     category: 'Equipement Reseaux',
     subcategory: 'Switch 24 port',
     name: 'Switch 24 ports Gigabit pour baie reseau',
     price: 1450,
     badge: '24 ports',
-    image: 'https://m.media-amazon.com/images/I/61LUzWh56oL._AC_SL1500_.jpg',
+    image: switch24PortImage,
     stock: true,
   },
   {
-    id: 42,
+    id: 53,
     brand: 'Somfy',
-    category: 'Automatisme & Domotique',
+    category: 'Domotique',
     subcategory: 'TAHOMA SOMFY',
     name: 'Box domotique Somfy TaHoma Switch',
     price: 1890,
     badge: 'TaHoma',
-    image: 'https://m.media-amazon.com/images/I/51dNfq+tzAL._AC_SL1000_.jpg',
+    image: somfyTahomaImage,
     stock: true,
   },
   {
-    id: 43,
+    id: 54,
     brand: 'Akuvox',
-    category: 'Automatisme & Domotique',
+    category: 'Domotique',
     subcategory: 'AKUVOX',
     name: 'Moniteur interieur Akuvox pour maison connectee',
     price: 2450,
     badge: 'Akuvox',
-    image: 'https://m.media-amazon.com/images/I/51m-vTyM3JL._AC_SL1000_.jpg',
+    image: akuvoxMonitorImage,
     stock: true,
   },
   {
-    id: 44,
+    id: 55,
     brand: 'Tuya',
-    category: 'Automatisme & Domotique',
+    category: 'Domotique',
     subcategory: 'Tuya',
     name: 'Interrupteur intelligent Tuya Wi-Fi tactile',
     price: 180,
     badge: 'Tuya',
-    image: 'https://m.media-amazon.com/images/I/51k51JYXbIL._AC_SL1000_.jpg',
+    image: tuyaSwitchImage,
     stock: true,
   },
   {
-    id: 45,
+    id: 56,
     brand: 'Shelly',
-    category: 'Automatisme & Domotique',
+    category: 'Domotique',
     subcategory: 'Shelly',
     name: 'Module relais Shelly Plus 1 Wi-Fi',
     price: 210,
     badge: 'Shelly',
-    image: 'https://m.media-amazon.com/images/I/61NAdWicQ7L._AC_SL1500_.jpg',
+    image: shellyRelayImage,
     stock: true,
   },
   {
-    id: 46,
-    brand: 'BFT',
-    category: 'Automatisme & Domotique',
-    subcategory: 'BFT',
-    name: 'Moteur portail coulissant BFT avec accessoires',
-    price: 3290,
-    badge: 'Portail',
-    image: 'https://m.media-amazon.com/images/I/61EptLgVaRL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 47,
-    brand: 'Somfy',
-    category: 'Automatisme & Domotique',
-    subcategory: 'Tringles a rideaux motorise',
-    name: 'Tringle a rideaux motorisee avec telecommande',
-    price: 1650,
-    badge: 'Rideaux',
-    image: 'https://m.media-amazon.com/images/I/61r2OZgYLBL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 48,
-    brand: 'NICE',
-    category: 'Automatisme & Domotique',
-    subcategory: 'NICE',
-    name: 'Kit automatisme portail battant NICE',
-    price: 3490,
-    badge: 'NICE',
-    image: 'https://m.media-amazon.com/images/I/61TZEa9oQjL._AC_SL1500_.jpg',
-    stock: true,
-  },
-  {
-    id: 49,
-    brand: 'Mortech',
-    category: 'Automatisme & Domotique',
-    subcategory: 'Selecteur',
-    name: 'Selecteur a cle pour automatisme portail',
-    price: 190,
-    badge: 'Selecteur',
-    image: 'https://m.media-amazon.com/images/I/51+c9UTafjL._AC_SL1000_.jpg',
-    stock: true,
-  },
-  {
-    id: 50,
-    brand: 'Mortech',
-    category: 'Automatisme & Domotique',
-    subcategory: 'Porte Vitree',
-    name: 'Kit automatisme pour porte vitree coulissante',
-    price: 4200,
-    badge: 'Porte',
-    image: 'https://m.media-amazon.com/images/I/51vn6Qz8YxL._AC_SL1000_.jpg',
-    stock: true,
-  },
-  {
-    id: 51,
+    id: 62,
     brand: 'Mortech',
     category: 'Controle Dacces et Pointeuse',
     subcategory: 'Serrure intelligente',
     name: 'Serrure intelligente connectee avec clavier et badge',
     price: 1450,
     badge: 'Smart lock',
-    image: 'https://m.media-amazon.com/images/I/61XwZ13C2qL._AC_SL1500_.jpg',
+    image: smartLockImage,
     stock: true,
   },
   {
-    id: 52,
+    id: 63,
     brand: 'ZKTeco',
     category: 'Controle Dacces et Pointeuse',
     subcategory: "Controle D'acces ZKTeco",
@@ -653,18 +587,18 @@ const products = [
     stock: true,
   },
   {
-    id: 53,
+    id: 64,
     brand: 'Hikvision',
     category: 'Controle Dacces et Pointeuse',
     subcategory: 'Pointeuse hikvision',
     name: 'Pointeuse Hikvision biometrie visage et badge',
     price: 1750,
     badge: 'Pointage',
-    image: 'https://www.bhphotovideo.com/cdn-cgi/image/fit%3Dscale-down%2Cwidth%3D500%2Cquality%3D95/https%3A//www.bhphotovideo.com/images/images500x500/hikvision_ds_k1t502dbwx_c_access_control_terminal_1715868963_1753179.jpg',
+    image: pointeuseHikvisionImage,
     stock: true,
   },
   {
-    id: 54,
+    id: 65,
     brand: 'Hikvision',
     category: 'Securite',
     subcategory: 'Detection intrusion',
@@ -675,7 +609,7 @@ const products = [
     stock: true,
   },
   {
-    id: 55,
+    id: 66,
     brand: 'Nugelec',
     category: 'Securite',
     subcategory: 'Detection incendie',
@@ -685,13 +619,56 @@ const products = [
     image: 'https://materiel-securite-incendie.fireless.fr/5740-large_default/detecteur-thermovelocimetrique-s3000-nug30247.jpg',
     stock: true,
   },
+  {
+    id: 67,
+    brand: 'Kingston',
+    category: 'Materiel Informatique',
+    subcategory: 'RAM',
+    name: 'RAM Kingston 16GB DDR4 3200MHz UDIMM',
+    price: 450,
+    badge: 'DDR4 16GB',
+    image: ramMemoryImage,
+    stock: true,
+  },
+  {
+    id: 68,
+    brand: 'SanDisk',
+    category: 'Materiel Informatique',
+    subcategory: 'SSDs',
+    name: 'SanDisk SSD Plus 1TB SATA III',
+    price: 1200,
+    badge: 'SSD 1TB',
+    image: sandiskSsdImage,
+    stock: true,
+  },
+  {
+    id: 69,
+    brand: 'WD',
+    category: 'Materiel Informatique',
+    subcategory: 'Stockage portable',
+    name: 'WD My Passport Disque dur externe portable 2TB',
+    price: 1050,
+    badge: 'Portable 2TB',
+    image: portableDriveImage,
+    stock: true,
+  },
+  {
+    id: 70,
+    brand: 'WD',
+    category: 'Materiel Informatique',
+    subcategory: 'HDD',
+    name: 'WD Blue Disque dur interne 1TB 3.5 pouces',
+    price: 680,
+    badge: 'HDD 1TB',
+    image: wdHddImage,
+    stock: true,
+  },
 ];
 
 const quickCategories = [
   ['Uniview Camera', 'Camera IP et NVR professionnels', Camera, 'Videosurveillance'],
   ['Hikvision Camera', 'Surveillance analogique et IP', ShieldCheck, 'Videosurveillance'],
-  ['Domotique Sonoff', 'Modules connectes et capteurs', Home, 'Automatisme & Domotique'],
-  ['Automatisme Somfy', 'Moteurs et controle portails', Zap, 'Automatisme & Domotique'],
+  ['Domotique Sonoff', 'Modules connectes et capteurs', Home, 'Domotique'],
   ['Pointage ZKTeco', 'Pointeuses et controle acces', CircleUserRound, 'Controle Dacces et Pointeuse'],
   ['Ruijie sans fil', 'Wi-Fi entreprise et mesh', Network, 'Equipement Reseaux'],
 ];
@@ -725,12 +702,11 @@ function getCategoryUrl(category, subcategory) {
 }
 
 function normalizeProductCategory(category) {
-  if (category === 'Automatisme Et Domotique') return 'Automatisme & Domotique';
   return category;
 }
 
 function shouldFilterSubcategory(groupName) {
-  return groupName === 'Videosurveillance' || groupName === 'Securite' || groupName === 'Materiel Informatique' || groupName === 'Equipement Reseaux' || groupName === 'Automatisme Et Domotique' || groupName === 'Controle Dacces et Pointeuse';
+  return groupName === 'Videosurveillance' || groupName === 'Securite' || groupName === 'Materiel Informatique' || groupName === 'Equipement Reseaux' || groupName === 'Domotique' || groupName === 'Controle Dacces et Pointeuse';
 }
 
 function Link({ to, children, className, onNavigate, ...props }) {
@@ -777,9 +753,24 @@ function App() {
   }, [route, locationKey]);
 
   const filteredProducts = useMemo(() => {
+    let sectionLinks = null;
+    if (activeSubcategory) {
+      for (const group of categoryGroups) {
+        const sec = group.sections.find((s) => s.name.toLowerCase() === activeSubcategory.toLowerCase());
+        if (sec) {
+          sectionLinks = sec.links.map((l) => l.toLowerCase());
+          break;
+        }
+      }
+    }
+
     return products.filter((product) => {
       const matchesCategory = activeCategory === 'Tous' || product.category === activeCategory;
-      const matchesSubcategory = !activeSubcategory || product.subcategory === activeSubcategory;
+      const matchesSubcategory =
+        !activeSubcategory ||
+        product.subcategory === activeSubcategory ||
+        (product.subcategory && sectionLinks && sectionLinks.includes(product.subcategory.toLowerCase())) ||
+        (product.brand && product.brand.toLowerCase() === activeSubcategory.toLowerCase());
       const matchesQuery = `${product.name} ${product.brand} ${product.category} ${product.subcategory || ''}`.toLowerCase().includes(query.toLowerCase());
       return matchesCategory && matchesSubcategory && matchesQuery;
     });
@@ -922,7 +913,9 @@ function HomePage({ productProps, isMenuOpen, setIsMenuOpen }) {
   return (
     <>
       <Hero />
+      <CategoryShowcase />
       <CategoryBrowser isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <ProductsSection {...productProps} limit={6} title="Produits populaires" />
       <QuickCategories />
       <Services compact />
       <PolicyPreview />
@@ -1046,6 +1039,7 @@ function ContactSection({ onSubmit, messageSent }) {
 
           <div className="contact-map">
             <iframe 
+              title="Localisation Mortech Solutions"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3438.7889023755006!2d-9.598!3d30.427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDI1JzM2LjAiTiA5wrAzNSc1Mi44Ilc!5e0!3m2!1sfr!2sma!4v1234567890" 
               width="100%" 
               height="300" 
@@ -1154,6 +1148,7 @@ function PageHero({ eyebrow, title, text }) {
 
 function Hero() {
   const [wordIndex, setWordIndex] = useState(0);
+  const [sliderIndex, setSliderIndex] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -1161,6 +1156,21 @@ function Hero() {
     }, 2200);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const sliderTimer = window.setInterval(() => {
+      setSliderIndex((current) => (current + 1) % dynamicHeroWords.length);
+    }, 3500);
+    return () => window.clearInterval(sliderTimer);
+  }, []);
+
+  const sliderItems = [
+    { title: 'Videosurveillance', icon: Camera, text: 'Cameras IP et analogiques haute qualite' },
+    { title: 'Reseaux', icon: Network, text: 'Equipements reseau professionnels' },
+    { title: 'Domotique', icon: Home, text: 'Solutions de maison connectee' },
+    { title: 'Controle d\'acces', icon: ShieldCheck, text: 'Systemes securises et pointage' },
+    { title: 'Informatique', icon: Cpu, text: 'Materiel IT et stockage professionnel' },
+  ];
 
   return (
     <section className="hero" id="accueil">
@@ -1175,10 +1185,32 @@ function Hero() {
           <Link className="primary-button" to="/produits">Voir les produits</Link>
         </div>
       </div>
-      <div className="hero-panel">
-        <div><Camera /><strong>Materiel securite</strong><span>Dahua, Hikvision, Uniview</span></div>
-        <div><ShieldCheck /><strong>Certifie & garanti</strong><span>Conseil, installation et SAV</span></div>
-        <div><Network /><strong>Reseaux rapides</strong><span>Switch, fibre, firewall, Wi-Fi</span></div>
+      <div className="hero-slider">
+        <div className="slider-container">
+          {sliderItems.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                className={`slider-item ${idx === sliderIndex ? 'active' : ''}`} 
+                key={item.title}
+              >
+                <Icon size={48} />
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
+            );
+          })}
+        </div>
+        <div className="slider-dots">
+          {sliderItems.map((item, idx) => (
+            <button 
+              key={item.title} 
+              className={`dot ${idx === sliderIndex ? 'active' : ''}`}
+              onClick={() => setSliderIndex(idx)}
+              aria-label={`Aller a ${sliderItems[idx].title}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -1189,9 +1221,6 @@ function CategoryBrowser({ isMenuOpen, setIsMenuOpen }) {
     <section className={`category-browser ${isMenuOpen ? 'is-open' : ''}`}>
       <div className="section-heading">
         <div><span className="eyebrow">Catalogue</span><h2>Categories de produits</h2></div>
-        <button className="secondary-button compact" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          <SlidersHorizontal size={16} /> Parcourir
-        </button>
       </div>
       <div className="category-panel">
         <div className="category-panel-title">Categories de produits</div>
@@ -1226,6 +1255,74 @@ function CategoryBrowser({ isMenuOpen, setIsMenuOpen }) {
             </article>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+
+function CategoryShowcase() {
+  const showcaseCategories = [
+    {
+      title: 'Videosurveillance',
+      icon: Camera,
+      description: 'Cameras IP et analogiques professionnelles',
+      brands: ['Hikvision', 'Dahua', 'Uniview']
+    },
+    {
+      title: 'Reseaux & Communication',
+      icon: Network,
+      description: 'Equipements reseau et connectivite',
+      brands: ['TP-Link', 'Ruijie', 'Cisco']
+    },
+    {
+      title: 'Controle d\'acces & Pointage',
+      icon: ShieldCheck,
+      description: 'Systemes d\'identification et de controle',
+      brands: ['Hikvision', 'ZKTeco', 'Dahua']
+    },
+    {
+      title: 'Domotique',
+      icon: Home,
+      description: 'Solutions connectees',
+      brands: ['Somfy', 'Sonoff', 'Tuya']
+    },
+    {
+      title: 'Securite & Alarmes',
+      icon: AlarmSmoke,
+      description: 'Systemes de detection intrusion et incendie',
+      brands: ['Ajax', 'Hikvision', 'Nugelec']
+    },
+    {
+      title: 'Informatique & Stockage',
+      icon: Cpu,
+      description: 'Materiel IT et solutions de stockage',
+      brands: ['Kingston', 'SanDisk', 'WD']
+    },
+  ];
+
+  return (
+    <section className="category-showcase">
+      <div className="section-heading">
+        <div><span className="eyebrow">Solutions</span><h2>Nos domaines de competence</h2></div>
+      </div>
+      <div className="showcase-grid">
+        {showcaseCategories.map(({ title, icon: Icon, description, brands }) => (
+          <Link 
+            to={getCategoryUrl(normalizeProductCategory(title.replace(' & ', ' Et ')))} 
+            className="showcase-card" 
+            key={title}
+          >
+            <div className="showcase-icon">
+              <Icon size={32} />
+            </div>
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <div className="showcase-brands">
+              {brands.map(brand => <span key={brand}>{brand}</span>)}
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );
