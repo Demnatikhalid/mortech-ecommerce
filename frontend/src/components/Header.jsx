@@ -12,15 +12,31 @@ import { Link } from './Link';
 import { formatPrice } from '../helpers';
 import logo from '../assets/mortech-logo-cropped.png';
 
-export function Header({ query, setQuery, cartCount, cartTotal, route, isMenuOpen, setIsMenuOpen }) {
+export function Header({ query, setQuery, cartCount, cartTotal, route, isMenuOpen, setIsMenuOpen, currentUser, onLogout }) {
   return (
     <header className="site-header">
       <div className="topbar">
         <span><Phone size={14} /> +(212) 528.24.17.43</span>
         <span><Mail size={14} /> contact@mortech-solutions.ma</span>
         <span><MapPin size={14} /> Agadir, Maroc</span>
-        <Link to="/login">Mon compte</Link>
-        <Link to="/inscription">Creer un compte</Link>
+        {currentUser ? (
+          <>
+            <Link to="/profil" style={{ color: '#fff', marginRight: '1rem', fontSize: '0.85rem' }}>
+              Bonjour, {currentUser.name || currentUser.email}
+            </Link>
+            <button 
+              onClick={onLogout} 
+              style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '0.85rem', padding: 0, textDecoration: 'underline' }}
+            >
+              Se deconnecter
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Mon compte</Link>
+            <Link to="/inscription">Creer un compte</Link>
+          </>
+        )}
       </div>
       <div className="nav-shell">
         <button className="icon-button mobile-only" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Menu categories">
@@ -45,7 +61,7 @@ export function Header({ query, setQuery, cartCount, cartTotal, route, isMenuOpe
           <Link className={route === '/services' ? 'active' : ''} to="/services">Services</Link>
           <Link className={route === '/contact' ? 'active' : ''} to="/contact">Contact</Link>
           <Link className={route === '/apropos' ? 'active' : ''} to="/apropos">A propos</Link>
-          <Link className={route === '/login' ? 'active' : ''} to="/login">Login</Link>
+          {!currentUser && <Link className={route === '/login' ? 'active' : ''} to="/login">Login</Link>}
         </nav>
         <Link className="cart-button" to="/panier">
           <ShoppingCart size={20} />

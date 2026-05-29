@@ -5,12 +5,13 @@ import { CartDrawer } from './components/CartDrawer';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { CartPage } from './pages/CartPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { ServicesPage } from './pages/ServicesPage';
 import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { AboutPage } from './pages/AboutPage';
-import { products, categoryGroups } from './products';
+import { categoryGroups } from './products';
 import {
   getRoute,
   getLocationKey,
@@ -23,11 +24,25 @@ export function App() {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [activeSubcategory, setActiveSubcategory] = useState('');
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mortech_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
-  const [loginSent, setLoginSent] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('mortech_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(null);
 
   useEffect(() => {
     const syncRoute = () => setLocationKey(getLocationKey());
@@ -36,9 +51,27 @@ export function App() {
   }, []);
 
   const categories = useMemo(
-    () => ['Tous', ...new Set(products.map((product) => product.category))],
-    []
+    () => ['Tous', ...new Set(products.filter((p) => p && p.category).map((product) => product.category))],
+    [products]
   );
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setProductsLoading(true);
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error(response.statusText || 'Erreur');
+        const data = await response.json();
+        setProducts(data || []);
+        setProductsError(null);
+      } catch (err) {
+        setProductsError(err.message || 'Impossible de charger les produits');
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
   const cartCount = cart.reduce((total, item) => total + item.qty, 0);
   const cartTotal = cart.reduce((total, item) => total + item.price * item.qty, 0);
 
@@ -118,14 +151,41 @@ export function App() {
     );
   }
 
+  function clearCart() {
+    setCart([]);
+  }
+
+  // Persist cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('mortech_cart', JSON.stringify(cart));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [cart]);
+
   function submitContact(event) {
     event.preventDefault();
     setMessageSent(true);
   }
 
-  function submitLogin(event) {
-    event.preventDefault();
-    setLoginSent(true);
+  function handleLoginSuccess(user) {
+    setCurrentUser(user);
+    localStorage.setItem('mortech_user', JSON.stringify(user));
+
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    const nextRoute = redirect && redirect.startsWith('/') ? redirect : '/';
+
+    window.history.pushState({}, '', nextRoute);
+    setLocationKey(getLocationKey());
+  }
+
+  function handleLogout() {
+    setCurrentUser(null);
+    localStorage.removeItem('mortech_user');
+    window.history.pushState({}, '', '/');
+    setLocationKey(getLocationKey());
   }
 
   function renderPage() {
@@ -141,7 +201,15 @@ export function App() {
       return <ProductsPage {...productProps} />;
     }
     if (route === '/panier') {
-      return <CartPage cart={cart} total={cartTotal} updateQty={updateQty} />;
+      return (
+        <CartPage
+          cart={cart}
+          total={cartTotal}
+          updateQty={updateQty}
+          currentUser={currentUser}
+          clearCart={clearCart}
+        />
+      );
     }
     if (route === '/services') {
       return <ServicesPage />;
@@ -150,13 +218,16 @@ export function App() {
       return <ContactPage onSubmit={submitContact} messageSent={messageSent} />;
     }
     if (route === '/login') {
-      return <LoginPage onSubmit={submitLogin} loginSent={loginSent} />;
+      return <LoginPage onLoginSuccess={handleLoginSuccess} />;
     }
     if (route === '/inscription') {
       return <RegisterPage />;
     }
     if (route === '/apropos') {
       return <AboutPage />;
+    }
+    if (route === '/profil') {
+      return <ProfilePage currentUser={currentUser} onLogout={handleLogout} />;
     }
     return (
       <HomePage
@@ -178,6 +249,8 @@ export function App() {
         onCart={() => setIsCartOpen(true)}
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
       <main>{renderPage()}</main>
       <Footer />

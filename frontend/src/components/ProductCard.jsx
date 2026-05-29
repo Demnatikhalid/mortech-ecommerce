@@ -3,11 +3,14 @@ import { Star, ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../helpers';
 
 export function ProductCard({ product, addToCart }) {
+  const rawImage = product.imageUrl || product.image || 'https://via.placeholder.com/420x280?text=Image+indisponible';
+  const imageUrl = typeof rawImage === 'string' ? encodeURI(rawImage) : rawImage;
+
   return (
     <article className="product-card">
       <div className="product-media">
-        <span className="badge">{product.badge}</span>
-        <img src={product.image} alt={product.name} />
+        {product.badge && <span className="badge">{product.badge}</span>}
+        <img src={imageUrl} alt={product.name} />
       </div>
       <div className="product-info">
         <span>{product.brand}</span>
