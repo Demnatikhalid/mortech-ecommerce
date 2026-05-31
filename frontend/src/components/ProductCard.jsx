@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star, ShoppingCart } from 'lucide-react';
+import { Link } from './Link';
 import { formatPrice } from '../helpers';
 
 export function ProductCard({ product, addToCart }) {
@@ -10,7 +11,9 @@ export function ProductCard({ product, addToCart }) {
     <article className="product-card">
       <div className="product-media">
         {product.badge && <span className="badge">{product.badge}</span>}
-        <img src={imageUrl} alt={product.name} />
+        <Link to={`/produit/${product.id}`}>
+          <img src={imageUrl} alt={product.name} />
+        </Link>
       </div>
       <div className="product-info">
         <span>{product.brand}</span>

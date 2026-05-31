@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 import prisma from './db.js';
 import { seedProducts } from './seedData.js';
 
@@ -9,6 +10,49 @@ dotenv.config();
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+const transporterOptions = {
+  auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  } : undefined
+};
+
+if (process.env.SMTP_SERVICE) {
+  transporterOptions.service = process.env.SMTP_SERVICE;
+} else {
+  transporterOptions.host = process.env.SMTP_HOST;
+  transporterOptions.port = parseInt(process.env.SMTP_PORT || '587', 10);
+  transporterOptions.secure = process.env.SMTP_SECURE === 'true';
+}
+
+const mailTransporter = nodemailer.createTransport(transporterOptions);
+
+async function sendWelcomeEmail(to, name) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('SMTP non configuré : impossible d’envoyer l’email de bienvenue.');
+    return;
+  }
+
+  const subject = 'Bienvenue sur Mortech Solution E-Commerce';
+  const text = `Bonjour ${name || 'client'},\n\nVotre compte Mortech Solution E-Commerce a bien été créé.\nVous pouvez maintenant vous connecter et profiter de notre boutique en ligne.\n\nMerci et bienvenue,\nL’équipe Mortech Solution E-Commerce`;
+  const html = `
+    <p>Bonjour ${name || 'client'},</p>
+    <p>Votre compte <strong>Mortech Solution E-Commerce</strong> a bien été créé.</p>
+    <p>Vous pouvez maintenant vous connecter et profiter de notre boutique en ligne.</p>
+    <p>Merci et bienvenue,<br/>L’équipe Mortech Solution E-Commerce</p>
+  `;
+
+  const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@mortech-solutions.ma';
+
+  await mailTransporter.sendMail({
+    from: fromAddress,
+    to,
+    subject,
+    text,
+    html
+  });
 }
 
 const app = express();
@@ -49,6 +93,12 @@ app.post('/api/auth/register', async (req, res, next) => {
         role: 'user'
       }
     });
+
+    try {
+      await sendWelcomeEmail(email, name);
+    } catch (mailError) {
+      console.error('Erreur lors de l’envoi de l’email de bienvenue :', mailError);
+    }
 
     const { password: _, ...userWithoutPassword } = user;
     res.status(201).json({ message: 'User registered successfully', user: userWithoutPassword });

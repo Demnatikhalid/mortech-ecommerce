@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
+import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CartPage } from './pages/CartPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -127,7 +128,6 @@ export function App() {
       }
       return [...current, { ...product, qty: 1 }];
     });
-    setIsCartOpen(true);
   }
 
   function selectCategory(category) {
@@ -197,6 +197,17 @@ export function App() {
       filteredProducts,
       addToCart,
     };
+    if (route.startsWith('/produit/')) {
+      const productId = parseInt(route.split('/')[2], 10);
+      const product = products.find((item) => item.id === productId);
+      const relatedProducts = products
+        .filter((item) =>
+          item.id !== productId &&
+          (item.category === product?.category || item.subcategory === product?.subcategory || item.brand === product?.brand)
+        )
+        .slice(0, 4);
+      return <ProductDetailPage product={product} relatedProducts={relatedProducts} addToCart={addToCart} />;
+    }
     if (route === '/produits') {
       return <ProductsPage {...productProps} />;
     }

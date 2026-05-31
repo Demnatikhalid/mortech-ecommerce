@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Minus, Plus, Check } from 'lucide-react';
 import { Link } from '../components/Link';
 import { formatPrice, buildWhatsAppOrder } from '../helpers';
@@ -7,6 +7,25 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [checkoutData, setCheckoutData] = useState({
+    name: currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    address: '',
+    postalCode: '',
+    city: '',
+  });
+
+  useEffect(() => {
+    if (!currentUser) return;
+    setCheckoutData((current) => ({
+      ...current,
+      name: currentUser.name || '',
+      email: currentUser.email || '',
+      phone: currentUser.phone || '',
+    }));
+  }, [currentUser]);
 
   const whatsappUrl = `https://wa.me/212528241743?text=${encodeURIComponent(
     buildWhatsAppOrder(cart, total)
@@ -52,6 +71,41 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const openCheckoutModal = () => {
+    if (!currentUser) {
+      const redirectTo = '/panier';
+      window.history.pushState({ from: redirectTo }, '', `/login?redirect=${encodeURIComponent(redirectTo)}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      return;
+    }
+
+    setShowCheckoutModal(true);
+  };
+
+  const closeCheckoutModal = () => {
+    setShowCheckoutModal(false);
+    setError('');
+  };
+
+  const handleCheckoutChange = (event) => {
+    const { name, value } = event.target;
+    setCheckoutData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckoutSubmit = async (event) => {
+    event.preventDefault();
+    if (!checkoutData.address || !checkoutData.postalCode || !checkoutData.city) {
+      setError('Veuillez renseigner l’adresse, le code postal et la ville.');
+      return;
+    }
+
+    setShowCheckoutModal(false);
+    await handleRequestQuote();
   };
 
   if (success) {
@@ -132,8 +186,13 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
             </div>
           )}
 
-          <button className="primary-button full" type="button" disabled={!cart.length}>
-            Valider mon panier
+          <button
+            className="primary-button full"
+            type="button"
+            onClick={openCheckoutModal}
+            disabled={loading || !cart.length}
+          >
+            {loading ? 'Traitement...' : 'Valider mon panier'}
           </button>
           <a
             className={`whatsapp-button full ${!cart.length ? 'disabled' : ''}`}
@@ -147,13 +206,84 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
           <button 
             className="secondary-button full" 
             style={{ marginTop: '0.5rem', width: '100%' }}
-            onClick={handleRequestQuote}
+            onClick={openCheckoutModal}
             disabled={loading || !cart.length}
           >
             {loading ? 'Traitement...' : 'Demander un devis'}
           </button>
         </aside>
       </div>
+
+      {showCheckoutModal && (
+        <div className="cart-modal-overlay" role="dialog" aria-modal="true">
+          <div className="cart-modal">
+            <div className="cart-modal-header">
+              <h2>Valider mon panier</h2>
+              <button type="button" className="cart-modal-close" onClick={closeCheckoutModal} aria-label="Fermer">
+                ×
+              </button>
+            </div>
+            <form className="cart-modal-form" onSubmit={handleCheckoutSubmit}>
+              <input
+                type="text"
+                name="name"
+                value={checkoutData.name}
+                onChange={handleCheckoutChange}
+                placeholder="Nom"
+              />
+              <input
+                type="email"
+                name="email"
+                value={checkoutData.email}
+                onChange={handleCheckoutChange}
+                placeholder="Email"
+              />
+              <input
+                type="text"
+                name="phone"
+                value={checkoutData.phone}
+                onChange={handleCheckoutChange}
+                placeholder="Téléphone"
+              />
+              <div className="cart-modal-address-row">
+                <input
+                  type="text"
+                  name="address"
+                  value={checkoutData.address}
+                  onChange={handleCheckoutChange}
+                  placeholder="Adresse"
+                />
+                <input
+                  type="text"
+                  name="postalCode"
+                  value={checkoutData.postalCode}
+                  onChange={handleCheckoutChange}
+                  placeholder="Code postal"
+                />
+                <input
+                  type="text"
+                  name="city"
+                  value={checkoutData.city}
+                  onChange={handleCheckoutChange}
+                  placeholder="Ville"
+                />
+              </div>
+              <div className="cart-modal-captcha">
+                <div className="cart-modal-captcha-checkbox" />
+                <span>Je ne suis pas un robot</span>
+              </div>
+              {error && (
+                <div className="cart-modal-error">
+                  {error}
+                </div>
+              )}
+              <button className="primary-button full" type="submit" disabled={loading}>
+                {loading ? 'Traitement...' : 'Envoyer'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
