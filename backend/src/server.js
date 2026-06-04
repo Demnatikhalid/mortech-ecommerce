@@ -8,29 +8,25 @@ import { seedProducts } from './seedData.js';
 
 dotenv.config();
 
+const transporter = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: parseInt(process.env.MAIL_PORT || '2525', 10),
+  secure: process.env.MAIL_SECURE === 'true',
+  auth: process.env.MAIL_USER && process.env.MAIL_PASS ? {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
+  } : undefined
+});
+
+const baseUrl = process.env.APP_URL ? process.env.APP_URL.replace(/\/$/, '') : '';
+const logoUrl = process.env.MORTECH_LOGO_URL || `${baseUrl}/assets/mortech-logo.png`;
+
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
-const transporterOptions = {
-  auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  } : undefined
-};
-
-if (process.env.SMTP_SERVICE) {
-  transporterOptions.service = process.env.SMTP_SERVICE;
-} else {
-  transporterOptions.host = process.env.SMTP_HOST;
-  transporterOptions.port = parseInt(process.env.SMTP_PORT || '587', 10);
-  transporterOptions.secure = process.env.SMTP_SECURE === 'true';
-}
-
-const mailTransporter = nodemailer.createTransport(transporterOptions);
-
 async function sendWelcomeEmail(to, name) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
     console.warn('SMTP non configuré : impossible d’envoyer l’email de bienvenue.');
     return;
   }
@@ -38,15 +34,50 @@ async function sendWelcomeEmail(to, name) {
   const subject = 'Bienvenue sur Mortech Solution E-Commerce';
   const text = `Bonjour ${name || 'client'},\n\nVotre compte Mortech Solution E-Commerce a bien été créé.\nVous pouvez maintenant vous connecter et profiter de notre boutique en ligne.\n\nMerci et bienvenue,\nL’équipe Mortech Solution E-Commerce`;
   const html = `
-    <p>Bonjour ${name || 'client'},</p>
-    <p>Votre compte <strong>Mortech Solution E-Commerce</strong> a bien été créé.</p>
-    <p>Vous pouvez maintenant vous connecter et profiter de notre boutique en ligne.</p>
-    <p>Merci et bienvenue,<br/>L’équipe Mortech Solution E-Commerce</p>
+    <html>
+      <body style="margin:0;padding:0;font-family:Inter, system-ui, sans-serif;background-color:#f8fafc;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f8fafc;padding:40px 16px;">
+          <tr>
+            <td align="center">
+              <table width="100%" max-width="600" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 24px 80px rgba(15,23,42,0.08);">
+                <tr>
+                  <td style="padding:32px 32px 0 32px;text-align:center;">
+                    <img src="${logoUrl}" alt="Mortech Solution" width="170" style="display:block;margin:0 auto 20px auto;max-width:100%;height:auto;" />
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 32px 32px;">
+                    <h1 style="margin:0 0 20px;font-size:28px;line-height:36px;color:#0f172a;">Bonjour ${name || 'client'},</h1>
+                    <p style="margin:0 0 24px;font-size:16px;line-height:26px;color:#475569;">
+                      Votre compte <strong>Mortech Solution E-Commerce</strong> a bien été créé. Vous pouvez maintenant vous connecter et profiter de notre boutique en ligne.
+                    </p>
+                    <table cellpadding="0" cellspacing="0" role="presentation" style="width:100%;margin-bottom:32px;">
+                      <tr>
+                        <td align="center">
+                          <a href="${baseUrl || '#'}" style="display:inline-block;padding:14px 24px;background:#4f46e5;color:#ffffff;font-weight:600;border-radius:12px;text-decoration:none;font-size:16px;line-height:24px;">Accéder à la boutique</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="margin:0;font-size:16px;line-height:26px;color:#475569;">Merci et bienvenue,<br/>L’équipe Mortech Solution E-Commerce</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 32px 32px;">
+                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 24px;" />
+                    <p style="margin:0;font-size:12px;line-height:20px;color:#94a3b8;">Mortech Solution · 470 Noor Ave STE B #1148, South San Francisco, CA 94080</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
   `;
 
-  const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@mortech-solutions.ma';
+  const fromAddress = process.env.MAIL_FROM || 'no-reply@mortech-solutions.ma';
 
-  await mailTransporter.sendMail({
+  await transporter.sendMail({
     from: fromAddress,
     to,
     subject,
