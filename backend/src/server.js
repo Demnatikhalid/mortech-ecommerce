@@ -25,6 +25,30 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
+async function verifyRecaptchaToken(token) {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) {
+    console.warn('RECAPTCHA_SECRET_KEY non configurée');
+    return false;
+  }
+
+  const params = new URLSearchParams({
+    secret,
+    response: token
+  });
+
+  const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: params.toString()
+  });
+
+  const data = await response.json();
+  return data.success === true;
+}
+
 async function sendWelcomeEmail(to, name) {
   if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
     console.warn('SMTP non configuré : impossible d’envoyer l’email de bienvenue.');
@@ -103,9 +127,18 @@ app.get('/api/health', (req, res) => {
 // Auth APIs
 app.post('/api/auth/register', async (req, res, next) => {
   try {
-    const { name, company, email, phone, password } = req.body;
+    const { name, company, email, phone, password, recaptchaToken } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Validation reCAPTCHA requise' });
+    }
+
+    const recaptchaValid = await verifyRecaptchaToken(recaptchaToken);
+    if (!recaptchaValid) {
+      return res.status(400).json({ error: 'Échec de la validation reCAPTCHA' });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
