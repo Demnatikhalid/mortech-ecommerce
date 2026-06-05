@@ -96,7 +96,7 @@ export const seedProducts = [
     badge: 'Outdoor',
     price: 1625,
     stock: 8,
-    imageUrl: 'https://disismaroc.com/storage/products/16/381/disismaroc-point-dacces-exterieur-omnidirectionnel-rg-rap6202g-wi-fi-5-ac1300--1724167262-6802.png'
+    imageUrl: '/assets/products/Point acces exterieur RG-RAP6202(G) Wi-Fi 5 AC1300.png'
   },
   {
     name: 'Routeur Mesh Wi-Fi 6 3200M dual band Gigabit',
@@ -107,7 +107,7 @@ export const seedProducts = [
     badge: 'Wi-Fi 6',
     price: 1513.2,
     stock: 12,
-    imageUrl: 'https://disismaroc.com/storage/products/16/385/disismaroc-routeur-mesh-wi-fi-6-3200m-dual-band-gigabit-rg-ew3200gx-pro--1724168243-2597.png'
+    imageUrl: '/assets/products/Routeur Mesh Wi-Fi 6 3200M dual band Gigabit.jfif'
   },
   {
     name: 'Sonoff 4CH Pro R3 module domotique',
@@ -514,7 +514,7 @@ export const seedProducts = [
     badge: 'DDR4 16GB',
     price: 450,
     stock: 30,
-    imageUrl: 'https://via.placeholder.com/420x280?text=Kingston+16GB+DDR4'
+    imageUrl: '/assets/products/Memoire RAM DDR4 8GB 3200MHz.jpg'
   },
   {
     name: 'SanDisk SSD Plus 1TB SATA III',
@@ -525,7 +525,7 @@ export const seedProducts = [
     badge: 'SSD 1TB',
     price: 1200,
     stock: 28,
-    imageUrl: 'https://via.placeholder.com/420x280?text=SanDisk+SSD+1TB'
+    imageUrl: '/assets/products/SSD SATA 480GB pour ordinateur portable.webp'
   },
   {
     name: 'WD My Passport Disque dur externe portable 2TB',

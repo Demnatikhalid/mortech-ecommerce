@@ -195,6 +195,24 @@ app.post('/api/auth/login', async (req, res, next) => {
   }
 });
 
+app.post('/api/verify-recaptcha', async (req, res, next) => {
+  try {
+    const { recaptchaToken } = req.body;
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Validation reCAPTCHA requise' });
+    }
+
+    const recaptchaValid = await verifyRecaptchaToken(recaptchaToken);
+    if (!recaptchaValid) {
+      return res.status(400).json({ error: 'Échec de la validation reCAPTCHA' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 2. Users CRUD
 // Get all users
 app.get('/api/users', async (req, res, next) => {
@@ -305,9 +323,18 @@ app.delete('/api/products/:id', async (req, res, next) => {
 // 4. Orders & Quotes CRUD
 app.post('/api/orders', async (req, res, next) => {
   try {
-    const { userId, items, total, status = 'PENDING' } = req.body;
+    const { userId, items, total, status = 'PENDING', recaptchaToken } = req.body;
     if (!userId || !items || !items.length) {
       return res.status(400).json({ error: 'User ID and items are required' });
+    }
+
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Validation reCAPTCHA requise' });
+    }
+
+    const recaptchaValid = await verifyRecaptchaToken(recaptchaToken);
+    if (!recaptchaValid) {
+      return res.status(400).json({ error: 'Échec de la validation reCAPTCHA' });
     }
 
     const order = await prisma.order.create({

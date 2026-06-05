@@ -25,21 +25,40 @@ export function App() {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [activeSubcategory, setActiveSubcategory] = useState('');
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mortech_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [loadedUserId, setLoadedUserId] = useState(() => {
+    return currentUser ? (currentUser.id || currentUser.email) : 'guest';
+  });
+
   const [cart, setCart] = useState(() => {
     try {
-      const saved = localStorage.getItem('mortech_cart');
+      const initialUser = (() => {
+        try {
+          const saved = localStorage.getItem('mortech_user');
+          return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+          return null;
+        }
+      })();
+      const key = initialUser ? `mortech_cart_${initialUser.id || initialUser.email}` : 'mortech_cart_guest';
+      const saved = localStorage.getItem(key);
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
       return [];
     }
   });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
-  const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('mortech_user');
-    return saved ? JSON.parse(saved) : null;
-  });
 
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -155,14 +174,33 @@ export function App() {
     setCart([]);
   }
 
-  // Persist cart to localStorage whenever it changes
+  // Synchroniser le panier en fonction du changement d'utilisateur connecté
   useEffect(() => {
-    try {
-      localStorage.setItem('mortech_cart', JSON.stringify(cart));
-    } catch (e) {
-      // ignore storage errors
+    const currentId = currentUser ? (currentUser.id || currentUser.email) : 'guest';
+    if (loadedUserId !== currentId) {
+      const key = currentUser ? `mortech_cart_${currentUser.id || currentUser.email}` : 'mortech_cart_guest';
+      try {
+        const saved = localStorage.getItem(key);
+        setCart(saved ? JSON.parse(saved) : []);
+      } catch (e) {
+        setCart([]);
+      }
+      setLoadedUserId(currentId);
     }
-  }, [cart]);
+  }, [currentUser, loadedUserId]);
+
+  // Sauvegarder le panier uniquement pour l'utilisateur actuellement chargé
+  useEffect(() => {
+    const currentId = currentUser ? (currentUser.id || currentUser.email) : 'guest';
+    if (loadedUserId === currentId) {
+      const key = currentUser ? `mortech_cart_${currentUser.id || currentUser.email}` : 'mortech_cart_guest';
+      try {
+        localStorage.setItem(key, JSON.stringify(cart));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [cart, currentUser, loadedUserId]);
 
   function submitContact(event) {
     event.preventDefault();

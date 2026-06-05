@@ -2,11 +2,13 @@ export function formatPrice(value) {
   return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' }).format(value);
 }
 
-export function buildWhatsAppOrder(cart, total) {
+export function buildWhatsAppOrder(cart, total, name) {
   const lines = cart.length
     ? cart.map((item) => `- ${item.name} x${item.qty} = ${formatPrice(item.price * item.qty)}`)
     : ['Panier vide'];
-  return `Bonjour Mortech Solutions, je souhaite commander:\n${lines.join('\n')}\nTotal: ${formatPrice(total)}`;
+
+  const userNameLine = name ? `Mon nom: ${name}\n` : '';
+  return `Bonjour Mortech Solutions, je souhaite commander:\n${userNameLine}${lines.join('\n')}\nTotal: ${formatPrice(total)}`;
 }
 
 export function getRoute() {
