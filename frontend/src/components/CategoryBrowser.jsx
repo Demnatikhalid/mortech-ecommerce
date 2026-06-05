@@ -11,14 +11,7 @@ import {
 export function CategoryBrowser({ isMenuOpen, setIsMenuOpen }) {
   return (
     <section className={`category-browser ${isMenuOpen ? 'is-open' : ''}`}>
-      <div className="section-heading">
-        <div>
-          <span className="eyebrow">Catalogue</span>
-          <h2>Categories de produits</h2>
-        </div>
-      </div>
       <div className="category-panel">
-        <div className="category-panel-title">Categories de produits</div>
         <div className="category-tree">
           {categoryGroups.map((group) => (
             <article className="category-group" key={group.name}>
