@@ -6,6 +6,7 @@ import { formatPrice, buildWhatsAppOrder } from '../helpers';
 export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successType, setSuccessType] = useState('quote');
   const [error, setError] = useState('');
   const [checkoutMode, setCheckoutMode] = useState('quote');
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
@@ -59,7 +60,7 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
     return data.success === true;
   };
 
-  const handleRequestQuote = async (recaptchaToken) => {
+  const handleSubmitOrder = async (recaptchaToken, orderStatus) => {
     if (!currentUser) {
       const redirectTo = '/panier';
       window.history.pushState({ from: redirectTo }, '', `/login?redirect=${encodeURIComponent(redirectTo)}`);
@@ -80,7 +81,7 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
           userId: currentUser.id,
           items: cart,
           total: total,
-          status: 'DEVIS',
+          status: orderStatus,
           recaptchaToken
         })
       });
@@ -90,9 +91,10 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
         if (window.grecaptcha && captchaWidgetId !== null) {
           window.grecaptcha.reset(captchaWidgetId);
         }
-        throw new Error(data.error || 'Erreur lors de la demande de devis');
+        throw new Error(data.error || 'Erreur lors de l’envoi de la demande');
       }
 
+      setSuccessType(orderStatus === 'DEVIS' ? 'quote' : 'cart');
       setSuccess(true);
       clearCart();
       if (window.grecaptcha && captchaWidgetId !== null) {
@@ -247,19 +249,25 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
     }
 
     setShowCheckoutModal(false);
-    await handleRequestQuote(recaptchaToken);
+    const orderStatus = checkoutMode === 'quote' ? 'DEVIS' : 'PENDING';
+    await handleSubmitOrder(recaptchaToken, orderStatus);
   };
 
   if (success) {
+    const isQuote = successType === 'quote';
     return (
       <section className="page-shell">
         <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '2.5rem 2rem', backgroundColor: '#18181b', borderRadius: '12px', border: '1px solid #27272a' }}>
           <div style={{ display: 'inline-flex', padding: '1rem', backgroundColor: 'rgba(46, 204, 113, 0.1)', color: '#2ecc71', borderRadius: '50%', marginBottom: '1.5rem' }}>
             <Check size={48} />
           </div>
-          <h1 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1.75rem' }}>Demande de devis envoyee !</h1>
+          <h1 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1.75rem' }}>
+            {isQuote ? 'Demande de devis envoyee !' : 'Panier valide et envoye !'}
+          </h1>
           <p style={{ color: '#a1a1aa', lineHeight: '1.6', marginBottom: '2rem' }}>
-            Votre demande de devis a ete enregistree avec succes sous votre compte client. Notre equipe commerciale va etudier votre demande et vous contactera dans les plus brefs delais.
+            {isQuote
+              ? 'Votre demande de devis a ete enregistree avec succes sous votre compte client. Notre equipe commerciale va etudier votre demande et vous contactera dans les plus brefs delais.'
+              : 'Votre panier a ete transmis avec succes. Notre equipe va le verifier et vous recevrez un email de confirmation des qu il sera valide.'}
           </p>
           <Link className="primary-button" to="/produits">
             Retourner au catalogue
@@ -331,7 +339,7 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
           <button
             className="primary-button full"
             type="button"
-            onClick={() => openCheckoutModal('quote')}
+            onClick={() => openCheckoutModal('cart')}
             disabled={loading || !cart.length}
           >
             {loading ? 'Traitement...' : 'Valider mon panier'}
@@ -360,7 +368,13 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
         <div className="cart-modal-overlay" role="dialog" aria-modal="true">
           <div className="cart-modal">
             <div className="cart-modal-header">
-              <h2>{checkoutMode === 'whatsapp' ? 'Commander par WhatsApp' : 'Valider mon panier'}</h2>
+              <h2>
+                {checkoutMode === 'whatsapp'
+                  ? 'Commander par WhatsApp'
+                  : checkoutMode === 'quote'
+                    ? 'Demander un devis'
+                    : 'Valider mon panier'}
+              </h2>
               <button type="button" className="cart-modal-close" onClick={closeCheckoutModal} aria-label="Fermer">
                 ×
               </button>

@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import prisma from './db.js';
 import { seedProducts } from './seedData.js';
+import { sendCartValidatedEmail, sendQuotePdfEmail } from './orderEmails.js';
 
 dotenv.config();
 
@@ -352,6 +353,16 @@ app.patch('/api/orders/:id', async (req, res, next) => {
     if (isNaN(id) || !status) {
       return res.status(400).json({ error: 'Invalid order ID or status' });
     }
+
+    const previousOrder = await prisma.order.findUnique({
+      where: { id },
+      select: { status: true }
+    });
+
+    if (!previousOrder) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
     const order = await prisma.order.update({
       where: { id },
       data: { status },
@@ -360,6 +371,19 @@ app.patch('/api/orders/:id', async (req, res, next) => {
         orderItems: { include: { product: true } }
       }
     });
+
+    if (status === 'CONFIRMED' && previousOrder.status !== 'CONFIRMED') {
+      try {
+        if (previousOrder.status === 'PENDING') {
+          await sendCartValidatedEmail(transporter, order, baseUrl, logoUrl);
+        } else if (previousOrder.status === 'DEVIS') {
+          await sendQuotePdfEmail(transporter, order, baseUrl, logoUrl);
+        }
+      } catch (mailError) {
+        console.error('Erreur lors de l’envoi de l’email client :', mailError);
+      }
+    }
+
     res.json(order);
   } catch (error) {
     if (error.code === 'P2025') {
