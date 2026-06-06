@@ -36,6 +36,15 @@ export function App() {
     }
   });
 
+  function handleUpdateCurrentUser(user) {
+    setCurrentUser(user);
+    try {
+      localStorage.setItem('mortech_user', JSON.stringify(user));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }
+
   const [loadedUserId, setLoadedUserId] = useState(() => {
     return currentUser ? (currentUser.id || currentUser.email) : 'guest';
   });
@@ -293,8 +302,11 @@ export function App() {
     if (route === '/profil') {
       return <ProfilePage currentUser={currentUser} onLogout={handleLogout} />;
     }
+    if (route === '/admin/profil') {
+      return <AdminPage currentUser={currentUser} onLogout={handleLogout} onUpdateCurrentUser={handleUpdateCurrentUser} initialSection="profile" />;
+    }
     if (route === '/admin') {
-      return <AdminPage currentUser={currentUser} onLogout={handleLogout} />;
+      return <AdminPage currentUser={currentUser} onLogout={handleLogout} onUpdateCurrentUser={handleUpdateCurrentUser} />;
     }
     return (
       <HomePage

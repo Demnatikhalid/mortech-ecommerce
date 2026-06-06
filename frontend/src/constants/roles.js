@@ -10,6 +10,7 @@ export const ROLE_LABELS = {
 
 export const ADMIN_SECTIONS = [
   { id: 'stats', label: 'Voir statistiques' },
+  { id: 'profile', label: 'Profil admin' },
   { id: 'inventory', label: 'Gérer inventaire' },
   { id: 'products', label: 'Ajouter produits' },
   { id: 'quotes', label: 'Traiter devis client' },

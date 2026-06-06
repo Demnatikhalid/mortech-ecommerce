@@ -8,6 +8,7 @@ import {
   LogOut,
   PackagePlus,
   Shield,
+  User,
   Users,
   Wrench,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ import {
 
 const sectionIcons = {
   stats: BarChart3,
+  profile: User,
   inventory: Boxes,
   products: PackagePlus,
   quotes: FileText,
@@ -57,9 +59,16 @@ function StatCard({ label, value, accent }) {
   );
 }
 
-export function AdminPage({ currentUser, onLogout }) {
+export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialSection }) {
   const sections = getSectionsForRole(currentUser?.role);
-  const [activeSection, setActiveSection] = useState(sections[0]?.id || 'stats');
+  const [activeSection, setActiveSection] = useState(initialSection || sections[0]?.id || 'stats');
+  const [profileForm, setProfileForm] = useState({
+    name: currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    company: currentUser?.company || '',
+  });
+  const [profileStatus, setProfileStatus] = useState({ loading: false, error: '', success: '' });
   const [stats, setStats] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -82,6 +91,49 @@ export function AdminPage({ currentUser, onLogout }) {
     if (!currentUser || !isStaffRole(currentUser.role)) return;
     loadData();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    setProfileForm({
+      name: currentUser.name || '',
+      email: currentUser.email || '',
+      phone: currentUser.phone || '',
+      company: currentUser.company || '',
+    });
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (initialSection && initialSection !== activeSection) {
+      setActiveSection(initialSection);
+    }
+  }, [initialSection, activeSection]);
+
+  async function handleProfileSave(event) {
+    event.preventDefault();
+    setProfileStatus({ loading: true, error: '', success: '' });
+
+    try {
+      const response = await fetch(`/api/users/${currentUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profileForm.name,
+          email: profileForm.email,
+          phone: profileForm.phone,
+          company: profileForm.company,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Impossible de mettre à jour le profil');
+      }
+
+      setProfileStatus({ loading: false, error: '', success: 'Profil mis à jour avec succès.' });
+      onUpdateCurrentUser?.(data);
+    } catch (err) {
+      setProfileStatus({ loading: false, error: err.message || 'Erreur lors de la mise à jour', success: '' });
+    }
+  }
 
   async function loadData() {
     setLoading(true);
@@ -283,6 +335,51 @@ export function AdminPage({ currentUser, onLogout }) {
           </div>
         );
 
+      case 'profile':
+        return (
+          <section className="admin-profile-section">
+            <form className="admin-profile-card" onSubmit={handleProfileSave}>
+              <h2>Profil Administrateur</h2>
+              <label>
+                Nom
+                <input
+                  value={profileForm.name}
+                  onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })}
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  type="email"
+                  value={profileForm.email}
+                  onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })}
+                  required
+                />
+              </label>
+              <label>
+                Téléphone
+                <input
+                  value={profileForm.phone}
+                  onChange={(event) => setProfileForm({ ...profileForm, phone: event.target.value })}
+                />
+              </label>
+              <label>
+                Entreprise
+                <input
+                  value={profileForm.company}
+                  onChange={(event) => setProfileForm({ ...profileForm, company: event.target.value })}
+                />
+              </label>
+              {profileStatus.error && <p className="admin-error">{profileStatus.error}</p>}
+              {profileStatus.success && <p className="admin-success">{profileStatus.success}</p>}
+              <button className="primary-button" type="submit" disabled={profileStatus.loading}>
+                {profileStatus.loading ? 'Enregistrement...' : 'Enregistrer les changements'}
+              </button>
+            </form>
+          </section>
+        );
+
       case 'inventory':
         return (
           <div className="admin-table-wrap">
@@ -474,6 +571,7 @@ export function AdminPage({ currentUser, onLogout }) {
 
         <div className="admin-sidebar-footer">
           <p>{currentUser.name || currentUser.email}</p>
+          <Link to="/admin/profil">Profil admin</Link>
           <button type="button" onClick={onLogout}>
             <LogOut size={16} /> Déconnexion
           </button>

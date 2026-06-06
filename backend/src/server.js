@@ -255,6 +255,40 @@ app.post('/api/users', async (req, res, next) => {
   }
 });
 
+// Update a user
+app.patch('/api/users/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const { name, email, phone, company } = req.body;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (company !== undefined) updateData.company = company;
+
+    if (!Object.keys(updateData).length) {
+      return res.status(400).json({ error: 'No data provided for update' });
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
+
+    const { password, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    next(error);
+  }
+});
+
 // Delete user
 app.delete('/api/users/:id', async (req, res, next) => {
   try {
