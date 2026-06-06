@@ -474,7 +474,6 @@ export function AdminPage({ currentUser, onLogout }) {
 
         <div className="admin-sidebar-footer">
           <p>{currentUser.name || currentUser.email}</p>
-          <Link to="/">Retour boutique</Link>
           <button type="button" onClick={onLogout}>
             <LogOut size={16} /> Déconnexion
           </button>

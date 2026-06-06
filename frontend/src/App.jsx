@@ -14,6 +14,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { AboutPage } from './pages/AboutPage';
 import { AdminPage } from './pages/AdminPage';
 import { categoryGroups } from './products';
+import { isStaffRole } from './constants/roles';
 import {
   getRoute,
   getLocationKey,
@@ -97,6 +98,13 @@ export function App() {
   const cartTotal = cart.reduce((total, item) => total + item.price * item.qty, 0);
 
   useEffect(() => {
+    if (!currentUser || !isStaffRole(currentUser.role)) return;
+    if (route === '/admin') return;
+    window.history.replaceState({}, '', '/admin');
+    setLocationKey(getLocationKey());
+  }, [currentUser, route, locationKey]);
+
+  useEffect(() => {
     if (route !== '/produits') return;
     const params = new URLSearchParams(window.location.search);
     const requestedCategory = params.get('categorie');
@@ -135,7 +143,7 @@ export function App() {
         .includes(query.toLowerCase());
       return matchesCategory && matchesSubcategory && matchesQuery;
     });
-  }, [activeCategory, activeSubcategory, query]);
+  }, [products, activeCategory, activeSubcategory, query]);
 
   function addToCart(product) {
     if (!product.stock) return;
@@ -216,7 +224,7 @@ export function App() {
     const redirect = params.get('redirect');
     let nextRoute = user.role === 'admin' ? '/admin' : '/profil';
 
-    if (redirect && redirect.startsWith('/')) {
+    if (redirect && redirect.startsWith('/') && user.role !== 'admin') {
       nextRoute = redirect;
     }
 
@@ -239,6 +247,8 @@ export function App() {
       setActiveCategory: selectCategory,
       filteredProducts,
       addToCart,
+      productsLoading,
+      productsError,
     };
     if (route.startsWith('/produit/')) {
       const productId = parseInt(route.split('/')[2], 10);

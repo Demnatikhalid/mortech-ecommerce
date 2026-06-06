@@ -11,6 +11,8 @@ export function ProductsSection({
   addToCart,
   limit,
   title = 'Produits populaires',
+  productsLoading = false,
+  productsError = null,
 }) {
   const visibleProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
   const visibleCategories = categories.includes(activeCategory)
@@ -37,18 +39,26 @@ export function ProductsSection({
           ))}
         </div>
       </div>
-      <div className="product-grid">
-        {visibleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} addToCart={addToCart} />
-        ))}
-      </div>
-      {!filteredProducts.length && (
-        <p className="empty-state">Aucun produit ne correspond a votre recherche.</p>
-      )}
-      {limit && filteredProducts.length > limit && (
-        <Link className="primary-button more-products" to="/produits">
-          Voir tout le catalogue
-        </Link>
+      {productsLoading ? (
+        <p className="empty-state">Chargement des produits...</p>
+      ) : productsError ? (
+        <p className="empty-state">{productsError}</p>
+      ) : (
+        <>
+          <div className="product-grid">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.id} product={product} addToCart={addToCart} />
+            ))}
+          </div>
+          {!filteredProducts.length && (
+            <p className="empty-state">Aucun produit ne correspond a votre recherche.</p>
+          )}
+          {limit && filteredProducts.length > limit && (
+            <Link className="primary-button more-products" to="/produits">
+              Voir tout le catalogue
+            </Link>
+          )}
+        </>
       )}
     </section>
   );
