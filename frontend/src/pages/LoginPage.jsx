@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check, UserPlus } from 'lucide-react';
 import { Link } from '../components/Link';
 
@@ -6,27 +6,115 @@ export function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [captchaError, setCaptchaError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [captchaWidgetId, setCaptchaWidgetId] = useState(null);
+
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+  useEffect(() => {
+    if (!recaptchaSiteKey) {
+      setCaptchaError('La clé reCAPTCHA n’est pas configurée.');
+      return;
+    }
+
+    let isMounted = true;
+
+    const renderCaptcha = () => {
+      if (!isMounted) return;
+      const container = document.getElementById('recaptcha-login-container');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      try {
+        const widgetId = window.grecaptcha.render('recaptcha-login-container', {
+          sitekey: recaptchaSiteKey,
+          callback: () => {
+            setCaptchaError('');
+          },
+          'error-callback': () => setCaptchaError('Erreur reCAPTCHA. Veuillez réessayer.'),
+          'expired-callback': () => {
+            setCaptchaError('Le reCAPTCHA a expiré. Veuillez le recharger.');
+          }
+        });
+        setCaptchaWidgetId(widgetId);
+      } catch (err) {
+        console.error('Erreur lors du rendu reCAPTCHA:', err);
+      }
+    };
+
+    if (window.grecaptcha && window.grecaptcha.render) {
+      renderCaptcha();
+    } else {
+      let script = document.querySelector('script[src*="recaptcha/api.js"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
+      const handleScriptLoad = () => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          renderCaptcha();
+        } else {
+          const interval = setInterval(() => {
+            if (window.grecaptcha && window.grecaptcha.render) {
+              clearInterval(interval);
+              renderCaptcha();
+            }
+          }, 100);
+          setTimeout(() => clearInterval(interval), 4000);
+        }
+      };
+
+      const oldOnload = script.onload;
+      script.onload = (e) => {
+        if (oldOnload) oldOnload(e);
+        handleScriptLoad();
+      };
+      script.onerror = () => setCaptchaError('Impossible de charger le script reCAPTCHA.');
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [recaptchaSiteKey]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setCaptchaError('');
     setLoading(true);
     setSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      if (!window.grecaptcha || captchaWidgetId === null) {
+        throw new Error('reCAPTCHA non prêt. Rechargez la page.');
+      }
+
+      const recaptchaToken = window.grecaptcha.getResponse(captchaWidgetId);
+      if (!recaptchaToken) {
+        throw new Error('Veuillez cocher le reCAPTCHA avant de continuer.');
+      }
+
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, recaptchaToken }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        if (window.grecaptcha && captchaWidgetId !== null) {
+          window.grecaptcha.reset(captchaWidgetId);
+        }
         throw new Error(data.error || 'Identifiants invalides');
       }
 
@@ -79,6 +167,12 @@ export function LoginPage({ onLoginSuccess }) {
               disabled={loading || success}
             />
           </label>
+          <div id="recaptcha-login-container" style={{ margin: '1rem 0' }} />
+          {captchaError && (
+            <div className="error-box" style={{ color: '#ff4b4b', backgroundColor: 'rgba(255, 75, 75, 0.1)', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem', fontSize: '0.9rem' }}>
+              {captchaError}
+            </div>
+          )}
           <button className="primary-button" type="submit" disabled={loading || success}>
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>

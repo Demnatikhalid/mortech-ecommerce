@@ -173,9 +173,18 @@ app.post('/api/auth/register', async (req, res, next) => {
 
 app.post('/api/auth/login', async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, recaptchaToken } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Validation reCAPTCHA requise' });
+    }
+
+    const recaptchaValid = await verifyRecaptchaToken(recaptchaToken);
+    if (!recaptchaValid) {
+      return res.status(400).json({ error: 'Échec de la validation reCAPTCHA' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
@@ -321,6 +330,45 @@ app.delete('/api/products/:id', async (req, res, next) => {
 });
 
 // 4. Orders & Quotes CRUD
+app.get('/api/orders', async (req, res, next) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: { select: { id: true, name: true, email: true, company: true, phone: true } },
+        orderItems: { include: { product: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(orders);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.patch('/api/orders/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { status } = req.body;
+    if (isNaN(id) || !status) {
+      return res.status(400).json({ error: 'Invalid order ID or status' });
+    }
+    const order = await prisma.order.update({
+      where: { id },
+      data: { status },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        orderItems: { include: { product: true } }
+      }
+    });
+    res.json(order);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    next(error);
+  }
+});
+
 app.post('/api/orders', async (req, res, next) => {
   try {
     const { userId, items, total, status = 'PENDING', recaptchaToken } = req.body;
@@ -361,6 +409,97 @@ app.post('/api/orders', async (req, res, next) => {
   }
 });
 
+// 5. Claims (Réclamations SAV)
+app.get('/api/claims', async (req, res, next) => {
+  try {
+    const claims = await prisma.claim.findMany({
+      include: {
+        user: { select: { id: true, name: true, email: true, phone: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(claims);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/claims', async (req, res, next) => {
+  try {
+    const { userId, subject, description } = req.body;
+    if (!userId || !subject) {
+      return res.status(400).json({ error: 'User ID and subject are required' });
+    }
+    const claim = await prisma.claim.create({
+      data: {
+        userId: parseInt(userId),
+        subject,
+        description
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } }
+      }
+    });
+    res.status(201).json(claim);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.patch('/api/claims/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { status } = req.body;
+    if (isNaN(id) || !status) {
+      return res.status(400).json({ error: 'Invalid claim ID or status' });
+    }
+    const claim = await prisma.claim.update({
+      where: { id },
+      data: { status },
+      include: {
+        user: { select: { id: true, name: true, email: true } }
+      }
+    });
+    res.json(claim);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Claim not found' });
+    }
+    next(error);
+  }
+});
+
+// 6. Admin statistics
+app.get('/api/admin/stats', async (req, res, next) => {
+  try {
+    const [usersCount, productsCount, ordersCount, quotesCount, claimsCount, lowStockCount] = await Promise.all([
+      prisma.user.count(),
+      prisma.product.count(),
+      prisma.order.count({ where: { status: { not: 'DEVIS' } } }),
+      prisma.order.count({ where: { status: 'DEVIS' } }),
+      prisma.claim.count(),
+      prisma.product.count({ where: { stock: { lte: 5 } } })
+    ]);
+
+    const revenue = await prisma.order.aggregate({
+      where: { status: { in: ['CONFIRMED', 'DELIVERED', 'COMPLETED'] } },
+      _sum: { total: true }
+    });
+
+    res.json({
+      usersCount,
+      productsCount,
+      ordersCount,
+      quotesCount,
+      claimsCount,
+      lowStockCount,
+      revenue: revenue._sum.total || 0
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Seed sample data for testing
 app.post('/api/seed', async (req, res, next) => {
   try {
@@ -373,14 +512,21 @@ app.post('/api/seed', async (req, res, next) => {
       }
     }
 
+    const adminPassword = hashPassword('admin123');
     let user = await prisma.user.findUnique({ where: { email: 'admin@mortech.com' } });
     if (!user) {
       user = await prisma.user.create({
         data: {
           email: 'admin@mortech.com',
-          name: 'Admin User',
+          name: 'Admin Gestionnaire',
+          password: adminPassword,
           role: 'admin'
         }
+      });
+    } else if (!user.password) {
+      user = await prisma.user.update({
+        where: { email: 'admin@mortech.com' },
+        data: { password: adminPassword, role: 'admin', name: 'Admin Gestionnaire' }
       });
     }
 

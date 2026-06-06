@@ -6,13 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="758b54c1-3c73-4d99-9d6a-c1e073887cc6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/edge.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/edge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index-browser.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index-browser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/wasm.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.prisma/client/wasm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/backend/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Header.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ProductCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ProductCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CartPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CartPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/products.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/products.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +26,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="398" />
+    <option name="cachedIndexableFilesCount" value="459" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -89,6 +95,8 @@
       <workItem from="1779982842047" duration="222000" />
       <workItem from="1779983103267" duration="325000" />
       <workItem from="1780063544927" duration="3000" />
+      <workItem from="1780751968128" duration="386000" />
+      <workItem from="1780752738292" duration="1217000" />
     </task>
     <servers />
   </component>

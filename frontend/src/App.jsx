@@ -12,6 +12,7 @@ import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { AboutPage } from './pages/AboutPage';
+import { AdminPage } from './pages/AdminPage';
 import { categoryGroups } from './products';
 import {
   getRoute,
@@ -213,7 +214,11 @@ export function App() {
 
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
-    const nextRoute = redirect && redirect.startsWith('/') ? redirect : '/';
+    let nextRoute = user.role === 'admin' || user.role === 'technicien' ? '/admin' : '/profil';
+
+    if (redirect && redirect.startsWith('/')) {
+      nextRoute = redirect;
+    }
 
     window.history.pushState({}, '', nextRoute);
     setLocationKey(getLocationKey());
@@ -278,6 +283,9 @@ export function App() {
     if (route === '/profil') {
       return <ProfilePage currentUser={currentUser} onLogout={handleLogout} />;
     }
+    if (route === '/admin') {
+      return <AdminPage currentUser={currentUser} onLogout={handleLogout} />;
+    }
     return (
       <HomePage
         productProps={productProps}
@@ -287,29 +295,35 @@ export function App() {
     );
   }
 
+  const isAdminRoute = route === '/admin';
+
   return (
     <>
-      <Header
-        query={query}
-        setQuery={setQuery}
-        cartCount={cartCount}
-        cartTotal={cartTotal}
-        route={route}
-        onCart={() => setIsCartOpen(true)}
-        isMenuOpen={isMenuOpen}
-        setIsMenuOpen={setIsMenuOpen}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-      />
+      {!isAdminRoute && (
+        <Header
+          query={query}
+          setQuery={setQuery}
+          cartCount={cartCount}
+          cartTotal={cartTotal}
+          route={route}
+          onCart={() => setIsCartOpen(true)}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
+      )}
       <main>{renderPage()}</main>
-      <Footer />
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
-        total={cartTotal}
-        updateQty={updateQty}
-      />
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && (
+        <CartDrawer
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cart={cart}
+          total={cartTotal}
+          updateQty={updateQty}
+        />
+      )}
     </>
   );
 }
