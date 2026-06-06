@@ -1370,7 +1370,6 @@ footer div { display: grid; gap: 4px; }
 .admin-badge.status-completed,
 .admin-badge.status-delivered { background: #d1fae5; color: #047857; }
 .admin-badge.role-admin { background: #ffedd5; color: #c2410c; }
-.admin-badge.role-technicien { background: #ede9fe; color: #6d28d9; }
 .admin-badge.role-user { background: #e2e8f0; color: #334155; }
 
 .admin-form {

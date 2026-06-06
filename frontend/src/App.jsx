@@ -214,7 +214,7 @@ export function App() {
 
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
-    let nextRoute = user.role === 'admin' || user.role === 'technicien' ? '/admin' : '/profil';
+    let nextRoute = user.role === 'admin' ? '/admin' : '/profil';
 
     if (redirect && redirect.startsWith('/')) {
       nextRoute = redirect;

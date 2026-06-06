@@ -190,7 +190,7 @@ export function AdminPage({ currentUser, onLogout }) {
       <section className="admin-shell">
         <div className="admin-guard">
           <h1>Accès réservé</h1>
-          <p>Connectez-vous avec un compte admin ou technicien SAV.</p>
+          <p>Connectez-vous avec un compte administrateur.</p>
           <Link className="primary-button" to="/login?redirect=/admin">Se connecter</Link>
         </div>
       </section>
@@ -202,7 +202,7 @@ export function AdminPage({ currentUser, onLogout }) {
       <section className="admin-shell">
         <div className="admin-guard">
           <h1>Accès refusé</h1>
-          <p>Cette page est réservée aux rôles Admin Gestionnaire et Technicien Support SAV.</p>
+          <p>Cette page est réservée aux administrateurs.</p>
           <Link className="primary-button" to="/">Retour à la boutique</Link>
         </div>
       </section>

@@ -5,40 +5,32 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
-const staffAccounts = [
-  {
-    email: 'admin@mortech.com',
-    name: 'Admin Gestionnaire',
-    password: 'admin123',
-    role: 'admin'
-  },
-  {
-    email: 'sav@mortech.com',
-    name: 'Technicien Support SAV',
-    password: 'sav123',
-    role: 'technicien'
-  }
-];
+const adminAccount = {
+  email: 'admin@mortech.com',
+  name: 'Admin Gestionnaire',
+  password: 'admin123',
+  role: 'admin'
+};
 
 async function main() {
-  for (const account of staffAccounts) {
-    const hashedPassword = hashPassword(account.password);
-    const user = await prisma.user.upsert({
-      where: { email: account.email },
-      update: {
-        name: account.name,
-        password: hashedPassword,
-        role: account.role
-      },
-      create: {
-        email: account.email,
-        name: account.name,
-        password: hashedPassword,
-        role: account.role
-      }
-    });
-    console.log(`Compte ${account.role} prêt : ${user.email} / ${account.password}`);
-  }
+  const hashedPassword = hashPassword(adminAccount.password);
+  const user = await prisma.user.upsert({
+    where: { email: adminAccount.email },
+    update: {
+      name: adminAccount.name,
+      password: hashedPassword,
+      role: adminAccount.role
+    },
+    create: {
+      email: adminAccount.email,
+      name: adminAccount.name,
+      password: hashedPassword,
+      role: adminAccount.role
+    }
+  });
+  console.log(`Compte admin prêt : ${user.email} / ${adminAccount.password}`);
+
+  await prisma.user.deleteMany({ where: { role: 'technicien' } });
 
   const demoClient = await prisma.user.findFirst({ where: { role: 'user' } });
   if (demoClient) {
