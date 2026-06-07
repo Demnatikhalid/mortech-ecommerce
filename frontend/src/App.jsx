@@ -251,6 +251,7 @@ export function App() {
   function renderPage() {
     const productProps = {
       categories,
+      products,
       activeCategory,
       activeSubcategory,
       setActiveCategory: selectCategory,
