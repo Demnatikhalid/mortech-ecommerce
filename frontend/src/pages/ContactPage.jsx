@@ -2,7 +2,7 @@ import React from 'react';
 import { PageHero } from '../components/PageHero';
 import { ContactSection } from '../components/ContactSection';
 
-export function ContactPage({ onSubmit, messageSent }) {
+export function ContactPage() {
   return (
     <>
       <PageHero
@@ -10,7 +10,7 @@ export function ContactPage({ onSubmit, messageSent }) {
         title="Nous contacter"
         text="Contactez-nous pour toute question ou demande. Remplissez le formulaire et nous vous repondrons dans les plus brefs delais."
       />
-      <ContactSection onSubmit={onSubmit} messageSent={messageSent} />
+      <ContactSection />
     </>
   );
 }

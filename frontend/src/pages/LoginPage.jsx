@@ -9,7 +9,20 @@ export function LoginPage({ onLoginSuccess }) {
   const [captchaError, setCaptchaError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [captchaWidgetId, setCaptchaWidgetId] = useState(null);
+
+  useEffect(() => {
+    try {
+      const savedEmail = localStorage.getItem('mortech_remembered_email');
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    } catch (e) {
+      // ignore localStorage errors
+    }
+  }, []);
 
   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
@@ -118,6 +131,16 @@ export function LoginPage({ onLoginSuccess }) {
         throw new Error(data.error || 'Identifiants invalides');
       }
 
+      try {
+        if (rememberMe) {
+          localStorage.setItem('mortech_remembered_email', email);
+        } else {
+          localStorage.removeItem('mortech_remembered_email');
+        }
+      } catch (e) {
+        // ignore storage errors
+      }
+
       setSuccess(true);
       if (onLoginSuccess) {
         setTimeout(() => {
@@ -166,6 +189,16 @@ export function LoginPage({ onLoginSuccess }) {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading || success}
             />
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={loading || success}
+              style={{ width: '1rem', height: '1rem' }}
+            />
+            Se souvenir de moi
           </label>
           <div id="recaptcha-login-container" style={{ margin: '1rem 0' }} />
           {captchaError && (

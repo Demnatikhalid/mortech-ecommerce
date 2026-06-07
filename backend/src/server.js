@@ -223,6 +223,62 @@ app.post('/api/verify-recaptcha', async (req, res, next) => {
   }
 });
 
+async function sendContactEmail({ name, email, subject, message }) {
+  if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
+    console.warn('SMTP non configuré : impossible d’envoyer le message de contact.');
+    return;
+  }
+
+  const fromAddress = process.env.MAIL_FROM || 'no-reply@mortech-solutions.ma';
+  const toAddress = 'contact@mortech-solutions.ma';
+  const finalSubject = subject ? `Contact formulaire: ${subject}` : 'Contact formulaire : message sans sujet';
+
+  const html = `
+    <html>
+      <body style="font-family: Inter, system-ui, sans-serif; color: #111827;">
+        <h2>Nouveau message de contact</h2>
+        <p><strong>Nom :</strong> ${name || 'Non renseigné'}</p>
+        <p><strong>Email :</strong> ${email || 'Non renseigné'}</p>
+        <p><strong>Sujet :</strong> ${subject || 'Non renseigné'}</p>
+        <p><strong>Message :</strong></p>
+        <p style="white-space: pre-wrap;">${message || ''}</p>
+      </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: fromAddress,
+    to: toAddress,
+    replyTo: email || fromAddress,
+    subject: finalSubject,
+    text: `Nom: ${name || 'Non renseigné'}\nEmail: ${email || 'Non renseigné'}\nSujet: ${subject || 'Non renseigné'}\n\n${message || ''}`,
+    html
+  });
+}
+
+app.post('/api/contact', async (req, res, next) => {
+  try {
+    const { name, email, subject, message, recaptchaToken } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Le nom, l’email et le message sont obligatoires.' });
+    }
+
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Validation reCAPTCHA requise' });
+    }
+
+    const recaptchaValid = await verifyRecaptchaToken(recaptchaToken);
+    if (!recaptchaValid) {
+      return res.status(400).json({ error: 'Échec de la validation reCAPTCHA' });
+    }
+
+    await sendContactEmail({ name, email, subject, message });
+    res.json({ success: true, message: 'Votre message a bien été envoyé.' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 2. Users CRUD
 // Get all users
 app.get('/api/users', async (req, res, next) => {

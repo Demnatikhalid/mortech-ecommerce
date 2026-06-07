@@ -1,7 +1,132 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapPin, Mail, Phone, Check } from 'lucide-react';
 
-export function ContactSection({ onSubmit, messageSent }) {
+export function ContactSection() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [captchaError, setCaptchaError] = useState('');
+  const [captchaWidgetId, setCaptchaWidgetId] = useState(null);
+
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+  useEffect(() => {
+    if (!recaptchaSiteKey) {
+      setCaptchaError('La clé reCAPTCHA n’est pas configurée.');
+      return;
+    }
+
+    let isMounted = true;
+    const renderCaptcha = () => {
+      if (!isMounted) return;
+      const container = document.getElementById('recaptcha-contact-container');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      try {
+        const widgetId = window.grecaptcha.render('recaptcha-contact-container', {
+          sitekey: recaptchaSiteKey,
+          callback: () => setCaptchaError(''),
+          'error-callback': () => setCaptchaError('Erreur reCAPTCHA. Veuillez réessayer.'),
+          'expired-callback': () => setCaptchaError('Le reCAPTCHA a expiré. Veuillez le recharger.')
+        });
+        setCaptchaWidgetId(widgetId);
+      } catch (err) {
+        console.error('Erreur lors du rendu reCAPTCHA:', err);
+        setCaptchaError('Impossible de rendre le reCAPTCHA.');
+      }
+    };
+
+    if (window.grecaptcha && window.grecaptcha.render) {
+      renderCaptcha();
+    } else {
+      let script = document.querySelector('script[src*="recaptcha/api.js"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
+      const handleScriptLoad = () => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          renderCaptcha();
+        } else {
+          const interval = setInterval(() => {
+            if (window.grecaptcha && window.grecaptcha.render) {
+              clearInterval(interval);
+              renderCaptcha();
+            }
+          }, 100);
+          setTimeout(() => clearInterval(interval), 4000);
+        }
+      };
+
+      const oldOnload = script.onload;
+      script.onload = (e) => {
+        if (oldOnload) oldOnload(e);
+        handleScriptLoad();
+      };
+      script.onerror = () => setCaptchaError('Impossible de charger le script reCAPTCHA.');
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [recaptchaSiteKey]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setCaptchaError('');
+    setLoading(true);
+    setSuccess(false);
+
+    try {
+      if (!window.grecaptcha || captchaWidgetId === null) {
+        throw new Error('reCAPTCHA non prêt. Rechargez la page.');
+      }
+
+      const recaptchaToken = window.grecaptcha.getResponse(captchaWidgetId);
+      if (!recaptchaToken) {
+        throw new Error('Veuillez cocher le reCAPTCHA avant de continuer.');
+      }
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message, recaptchaToken })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        if (window.grecaptcha && captchaWidgetId !== null) {
+          window.grecaptcha.reset(captchaWidgetId);
+        }
+        throw new Error(data.error || 'Erreur lors de l’envoi du message');
+      }
+
+      setSuccess(true);
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+      if (window.grecaptcha && captchaWidgetId !== null) {
+        window.grecaptcha.reset(captchaWidgetId);
+      }
+    } catch (err) {
+      setError(err.message || 'Une erreur est survenue.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="contact-section">
       <div className="contact-container">
@@ -53,29 +178,61 @@ export function ContactSection({ onSubmit, messageSent }) {
 
         <div className="contact-form-wrapper">
           <h2>Service contact email</h2>
-          <form onSubmit={onSubmit}>
+          {error && <div className="error-box">{error}</div>}
+          <form onSubmit={handleSubmit}>
             <label>
               <span>Nom (obligatoire)</span>
-              <input type="text" required placeholder="Votre nom" />
+              <input
+                type="text"
+                required
+                placeholder="Votre nom"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+              />
             </label>
             
             <label>
               <span>E-mail (obligatoire)</span>
-              <input type="email" required placeholder="votre.email@exemple.com" />
+              <input
+                type="email"
+                required
+                placeholder="votre.email@exemple.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
             </label>
             
             <label>
               <span>Sujet</span>
-              <input type="text" placeholder="Sujet de votre message" />
+              <input
+                type="text"
+                placeholder="Sujet de votre message"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={loading}
+              />
             </label>
             
             <label>
               <span>Message (obligatoire)</span>
-              <textarea required placeholder="Decrivez votre besoin..."></textarea>
+              <textarea
+                required
+                placeholder="Decrivez votre besoin..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                disabled={loading}
+              />
             </label>
-            
-            <button className="primary-button" type="submit">Envoyer</button>
-            {messageSent && <p className="success"><Check size={16} /> Votre message a ete envoye avec succes!</p>}
+            <div id="recaptcha-contact-container" style={{ margin: '1rem 0' }} />
+            {captchaError && <div className="error-box">{captchaError}</div>}
+            <button className="primary-button" type="submit" disabled={loading}>
+              {loading ? 'Envoi en cours...' : 'Envoyer'}
+            </button>
+            {success && (
+              <p className="success"><Check size={16} /> Votre message a ete envoye avec succes !</p>
+            )}
           </form>
         </div>
       </div>
