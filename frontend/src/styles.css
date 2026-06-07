@@ -347,6 +347,36 @@ img { max-width: 100%; display: block; }
   padding: 58px 24px 32px;
 }
 
+.about-claims-section {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 44px 24px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.about-claims-content {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+}
+
+.about-claims-section h2 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 38px);
+  color: var(--ink);
+  line-height: 1.05;
+}
+
+.about-claims-section p {
+  margin: 0;
+  color: #334155;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
 .page-hero h1 {
   margin-bottom: 14px;
   font-size: clamp(42px, 6vw, 68px);

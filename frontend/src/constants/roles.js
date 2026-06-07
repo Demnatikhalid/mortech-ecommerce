@@ -16,7 +16,6 @@ export const ADMIN_SECTIONS = [
   { id: 'quotes', label: 'Traiter devis client' },
   { id: 'orders', label: 'Traiter commandes client' },
   { id: 'users', label: 'Gérer utilisateurs' },
-  { id: 'claims', label: 'Voir réclamations' },
 ];
 
 export function isStaffRole(role) {
