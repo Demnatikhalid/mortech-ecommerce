@@ -1,48 +1,140 @@
 # Mortech E-Commerce
 
-Ce dépôt contient une application e-commerce simple avec un backend Express/Prisma et un frontend React/Vite.
+Application e-commerce composée d’un backend Express/Prisma et d’un frontend React/Vite.
 
-## Structure du projet
+## Aperçu
 
-- `backend/` : serveur Express, base de données Prisma, API d'authentification et produits
-- `frontend/` : application React avec Vite
-- `docker-compose.yml` : service PostgreSQL local pour le backend
+Ce dépôt regroupe toute l’application en deux parties :
+
+- `backend/` : API Express, Prisma, scripts de seed, génération de PDF et envoi d’e-mails
+- `frontend/` : interface React avec Vite, pages, composants, styles et helpers
+- `docker-compose.yml` : service PostgreSQL local pour le développement
+- `extracted-products.json` : données produits extraites pour initialisation ou référence
+
+## Structure principale
+
+```text
+.
+├── backend/
+│   ├── prisma/
+│   │   └── schema.prisma
+│   ├── scripts/
+│   │   ├── seedAdmins.js
+│   │   ├── seedAll.js
+│   │   └── updateImageUrls.js
+│   └── src/
+│       ├── db.js
+│       ├── deleteUsers.js
+│       ├── orderEmails.js
+│       ├── quotePdf.js
+│       ├── seedData.js
+│       └── server.js
+├── frontend/
+│   ├── public/assets/
+│   ├── scripts/copyAssets.js
+│   └── src/
+│       ├── App.jsx
+│       ├── helpers.js
+│       ├── main.jsx
+│       ├── products.js
+│       ├── styles.css
+│       ├── assets/
+│       ├── components/
+│       ├── constants/
+│       └── pages/
+├── docker-compose.yml
+├── extracted-products.json
+└── README.md
+```
+
+## Structure du frontend
+
+```text
+frontend/
+├── index.html
+├── package.json
+├── vite.config.js
+├── public/
+│   └── assets/
+│       └── products/
+└── src/
+   ├── App.jsx
+   ├── helpers.js
+   ├── main.jsx
+   ├── products.js
+   ├── styles.css
+   ├── assets/
+   │   ├── mortech-logo.png
+   │   ├── mortech-logo-cropped.png
+   │   └── products/
+   ├── components/
+   │   ├── BrandLogoGallery.jsx
+   │   ├── CartDrawer.jsx
+   │   ├── CategoryBrowser.jsx
+   │   ├── CategoryCatalog.jsx
+   │   ├── CategoryShowcase.jsx
+   │   ├── ContactSection.jsx
+   │   ├── Footer.jsx
+   │   ├── Header.jsx
+   │   ├── Hero.jsx
+   │   ├── Link.jsx
+   │   ├── PageHero.jsx
+   │   ├── PolicyPreview.jsx
+   │   ├── ProductCard.jsx
+   │   ├── ProductsSection.jsx
+   │   ├── QuickCategories.jsx
+   │   └── Services.jsx
+   ├── constants/
+   │   └── roles.js
+   └── pages/
+      ├── AboutPage.jsx
+      ├── AdminPage.jsx
+      ├── CartPage.jsx
+      ├── ContactPage.jsx
+      ├── HomePage.jsx
+      ├── LoginPage.jsx
+      ├── ProductDetailPage.jsx
+      ├── ProductsPage.jsx
+      ├── ProfilePage.jsx
+      ├── RegisterPage.jsx
+      └── ServicesPage.jsx
+```
 
 ## Prérequis
 
 - Node.js 18+ installé
 - npm installé
-- Docker (pour la base de données PostgreSQL)
+- Docker installé pour la base PostgreSQL locale
 
 ## Installation
 
-1. Démarrer la base de données PostgreSQL :
+1. Démarrer PostgreSQL :
 
    ```bash
    docker compose up -d
    ```
 
-2. Installer les dépendances backend :
+2. Installer les dépendances du backend :
 
    ```bash
    cd backend
    npm install
    ```
 
-3. Installer les dépendances frontend :
+3. Installer les dépendances du frontend :
 
    ```bash
    cd ../frontend
    npm install
    ```
 
-## Configuration backend
+## Configuration du backend
 
-Dans `backend/.env`, configurez :
+Créer un fichier `backend/.env` et définir au minimum :
 
 - `DATABASE_URL` pour PostgreSQL
-- `PORT` si besoin
-- SMTP : `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+- `PORT` si vous voulez changer le port du serveur
+- les variables SMTP si l’envoi d’e-mails est activé
 
 Exemple :
 
@@ -57,30 +149,90 @@ SMTP_PASS=your-smtp-password
 SMTP_FROM=no-reply@mortech-solutions.ma
 ```
 
-## Lancer le projet
+## Commandes utiles
 
 ### Backend
 
-```bash
-cd backend
-npm run dev
-```
+Depuis `backend/` :
+
+- `npm run dev` : lance le serveur avec Nodemon
+- `npm run db:push` : pousse le schéma Prisma vers la base
+- `npm run db:studio` : ouvre Prisma Studio
+- `npm run seed:admins` : crée ou met à jour les administrateurs
 
 ### Frontend
 
-```bash
-cd frontend
-npm run dev
-```
+Depuis `frontend/` :
 
-Le frontend devrait être accessible sur `http://127.0.0.1:5173` ou l'adresse affichée par Vite.
+- `npm run dev` : lance Vite en local
+- `npm run build` : génère le build de production
+- `npm run preview` : prévisualise le build localement
+
+## Lancement local
+
+1. Démarrer le backend :
+
+   ```bash
+   cd backend
+   npm run dev
+   ```
+
+2. Démarrer le frontend :
+
+   ```bash
+   cd ../frontend
+   npm run dev
+   ```
+
+Le frontend est accessible sur `http://127.0.0.1:5173` ou sur l’adresse indiquée par Vite.
 
 ## Fonctionnalités principales
 
 - Inscription et connexion
-- Envoi d'un e-mail de bienvenue à la création de compte
-- API produits et API utilisateurs
+- Gestion des utilisateurs et des produits
+- Envoi d’un e-mail de bienvenue
+- Génération de PDF pour certains flux métier
+- Scripts de seed et de maintenance des données
+
+## API Principale
+
+Les routes backend les plus importantes sont :
+
+- `GET /api/health` : vérification de l’état du serveur
+- `POST /api/auth/register` : inscription utilisateur avec validation reCAPTCHA
+- `POST /api/auth/login` : connexion utilisateur avec validation reCAPTCHA
+- `POST /api/verify-recaptcha` : validation d’un jeton reCAPTCHA
+- `POST /api/contact` : envoi du formulaire de contact
+- `GET /api/users` : récupération des utilisateurs
+- `POST /api/users` : création d’un utilisateur
+- `PATCH /api/users/:id` : mise à jour d’un utilisateur
+- `DELETE /api/users/:id` : suppression d’un utilisateur
+- `GET /api/products` : récupération des produits
+- `POST /api/products` : création d’un produit
+- `DELETE /api/products/:id` : suppression d’un produit
+- `GET /api/orders` : récupération des commandes et devis
+- `POST /api/orders` : création d’une commande ou d’un devis
+- `PATCH /api/orders/:id` : mise à jour du statut d’une commande
+
+## Interface Frontend
+
+L’application React est organisée autour des pages suivantes :
+
+- Accueil
+- Produits
+- Détail produit
+- Panier
+- Profil
+- Services
+- Contact
+- Connexion
+- Inscription
+- À propos
+- Administration
+
+Le frontend charge les produits depuis l’API, gère le panier localement et utilise les routes internes pour naviguer entre les pages sans rechargement complet.
 
 ## Notes
 
-Le backend utilise Prisma et la base de données PostgreSQL fournie par `docker-compose.yml`.
+- Le backend s’appuie sur Prisma et PostgreSQL.
+- Les données produits peuvent être importées ou synchronisées depuis `extracted-products.json`.
