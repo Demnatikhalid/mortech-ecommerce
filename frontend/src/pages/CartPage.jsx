@@ -269,6 +269,18 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
               ? 'Votre demande de devis a ete enregistree avec succes sous votre compte client. Notre equipe commerciale va etudier votre demande et vous contactera dans les plus brefs delais.'
               : 'Votre panier a ete transmis avec succes. Notre equipe va le verifier et vous recevrez un email de confirmation des qu il sera valide.'}
           </p>
+          <p style={{ color: '#a1a1aa', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+            Pour toute installation technique, n’hésitez pas à visiter notre site web.
+          </p>
+          <a
+            className="primary-button"
+            href="https://mortechsolutionstechnique.com/"
+            target="_blank"
+            rel="noreferrer noopener"
+            style={{ marginBottom: '1rem' }}
+          >
+            Visiter Mortech Solution Technique
+          </a>
           <Link className="primary-button" to="/produits">
             Retourner au catalogue
           </Link>
