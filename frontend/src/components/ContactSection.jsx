@@ -139,7 +139,7 @@ export function ContactSection() {
               <MapPin size={20} />
               <div>
                 <strong>Adresse</strong>
-                <p>Agadir, Maroc</p>
+                <p>Sidi Maarouf, Casablanca, Maroc</p>
               </div>
             </div>
             
@@ -160,12 +160,13 @@ export function ContactSection() {
                 <a href="tel:+212528241743">+(212) 528 241 743</a>
               </div>
             </div>
+
           </div>
 
           <div className="contact-map">
             <iframe 
               title="Localisation Mortech Solutions"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3438.7889023755006!2d-9.598!3d30.427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDI1JzM2LjAiTiA5wrAzNSc1Mi44Ilc!5e0!3m2!1sfr!2sma!4v1234567890" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13306.903875323282!2d-7.6339031023795115!3d33.50854446522306!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda62d409d784a0d%3A0xe9cf3be52c4b5d63!2sSidi%20Maarouf%2C%20Casablanca!5e0!3m2!1sfr!2sma!4v1718100000000!5m2!1sfr!2sma" 
               width="100%" 
               height="300" 
               style={{border: 0, borderRadius: '8px'}}

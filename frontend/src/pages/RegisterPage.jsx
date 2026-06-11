@@ -111,7 +111,7 @@ export function RegisterPage() {
         throw new Error('Veuillez cocher le reCAPTCHA avant de continuer.');
       }
 
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

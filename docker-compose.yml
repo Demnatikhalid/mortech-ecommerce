@@ -14,5 +14,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  waf:
+    build: ./waf
+    container_name: mortech-waf
+    restart: always
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./waf:/waf
+    environment:
+      - TARGET_HOST=http://host.docker.internal:5000
+      - LISTEN_PORT=8888
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   postgres_data:

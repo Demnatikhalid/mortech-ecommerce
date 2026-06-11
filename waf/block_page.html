@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accès Bloqué | Sécurité Mortech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f17;
+      --card-bg: rgba(20, 26, 38, 0.6);
+      --card-border: rgba(239, 68, 68, 0.2);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary-neon: #ef4444;
+      --primary-neon-glow: rgba(239, 68, 68, 0.15);
+      --accent-color: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 50px var(--primary-neon-glow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 
+        0 25px 45px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(239, 68, 68, 0.25);
+    }
+
+    .shield-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid var(--primary-neon);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-neon);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        transform: scale(1);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        transform: scale(1.03);
+      }
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 50%, #fca5a5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5rem;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    .details-table tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .details-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .details-table th, .details-table td {
+      padding: 1rem 0.75rem;
+    }
+
+    .details-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      width: 35%;
+    }
+
+    .details-table td {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .payload-cell {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem !important;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #fca5a5 !important;
+      word-break: break-all;
+      font-size: 0.85rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .footer-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .footer-note a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="shield-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h1>Requête Bloquée</h1>
+      <p class="subtitle">Votre requête a été détectée comme potentiellement malveillante par notre pare-feu applicatif (WAF) et a été rejetée.</p>
+      
+      <table class="details-table">
+        <tr>
+          <th>Règle Déclenchée</th>
+          <td><span class="badge badge-danger">{{RULE_ID}}</span></td>
+        </tr>
+        <tr>
+          <th>Type de Détection</th>
+          <td>{{RULE_NAME}}</td>
+        </tr>
+        <tr>
+          <th>Charge Utile (Payload)</th>
+          <td class="payload-cell">{{PAYLOAD}}</td>
+        </tr>
+        <tr>
+          <th>Adresse IP Client</th>
+          <td>{{CLIENT_IP}}</td>
+        </tr>
+        <tr>
+          <th>Horodatage</th>
+          <td>{{TIMESTAMP}}</td>
+        </tr>
+      </table>
+
+      <p class="footer-note">Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur de <strong>Mortech Solution</strong> en fournissant les détails ci-dessus.</p>
+    </div>
+  </div>
+</body>
+</html>

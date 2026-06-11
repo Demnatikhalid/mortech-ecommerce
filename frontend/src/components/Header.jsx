@@ -18,7 +18,7 @@ export function Header({ query, setQuery, cartCount, cartTotal, route, isMenuOpe
       <div className="topbar">
         <span><Phone size={14} /> +(212) 528.24.17.43</span>
         <span><Mail size={14} /> contact@mortech-solutions.ma</span>
-        <span><MapPin size={14} /> Agadir, Maroc</span>
+        <span><MapPin size={14} /> Casablanca, Maroc</span>
         {currentUser ? (
           <>
             <Link to="/profil" style={{ color: '#fff', marginRight: '1rem', fontSize: '0.85rem' }}>

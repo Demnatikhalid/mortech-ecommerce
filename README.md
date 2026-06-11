@@ -4,11 +4,12 @@ Application e-commerce composée d’un backend Express/Prisma et d’un fronten
 
 ## Aperçu
 
-Ce dépôt regroupe toute l’application en deux parties :
+Ce dépôt regroupe toute l’application en trois parties :
 
 - `backend/` : API Express, Prisma, scripts de seed, génération de PDF et envoi d’e-mails
 - `frontend/` : interface React avec Vite, pages, composants, styles et helpers
-- `docker-compose.yml` : service PostgreSQL local pour le développement
+- `waf/` : reverse proxy WAF en Python Flask pour la sécurité (SQLi, XSS, CSRF, Brute Force)
+- `docker-compose.yml` : services PostgreSQL et WAF locaux pour le développement
 - `extracted-products.json` : données produits extraites pour initialisation ou référence
 
 ## Structure principale
@@ -44,6 +45,10 @@ Ce dépôt regroupe toute l’application en deux parties :
 │       └── pages/
 ├── docker-compose.yml
 ├── extracted-products.json
+├── waf/
+│   ├── Dockerfile
+│   ├── block_page.html
+│   └── waf.py
 └── README.md
 ```
 
@@ -108,7 +113,7 @@ frontend/
 
 ## Installation
 
-1. Démarrer PostgreSQL :
+1. Démarrer les conteneurs PostgreSQL et WAF Proxy :
 
    ```bash
    docker compose up -d
