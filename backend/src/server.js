@@ -423,7 +423,10 @@ app.delete('/api/products/:id', async (req, res, next) => {
 // 4. Orders & Quotes CRUD
 app.get('/api/orders', async (req, res, next) => {
   try {
+    const { userId } = req.query;
+    const where = userId ? { userId: parseInt(userId, 10) } : {};
     const orders = await prisma.order.findMany({
+      where,
       include: {
         user: { select: { id: true, name: true, email: true, company: true, phone: true } },
         orderItems: { include: { product: true } }

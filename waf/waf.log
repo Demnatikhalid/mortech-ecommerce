@@ -1,0 +1,4 @@
+[2026-06-18 15:28:01] | BLOCKED | IP=172.18.0.1 | Rule=SQLi-003 (SQL comment injection) | Path=/api/auth/login? | Payload=POST body: --
+[2026-06-18 15:28:08] | BLOCKED | IP=172.18.0.1 | Rule=SQLi-003 (SQL comment injection) | Path=/api/auth/login? | Payload=POST body: --
+[2026-06-18 15:28:13] | BLOCKED | IP=172.18.0.1 | Rule=SQLi-003 (SQL comment injection) | Path=/api/auth/login? | Payload=POST body: --
+[2026-06-19 14:33:04] | BLOCKED | IP=172.18.0.1 | Rule=SQLi-003 (SQL comment injection) | Path=/api/auth/login? | Payload=POST body: --

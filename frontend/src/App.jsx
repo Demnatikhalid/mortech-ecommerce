@@ -301,7 +301,7 @@ export function App() {
       return <AboutPage />;
     }
     if (route === '/profil') {
-      return <ProfilePage currentUser={currentUser} onLogout={handleLogout} />;
+      return <ProfilePage currentUser={currentUser} onLogout={handleLogout} onUpdateCurrentUser={handleUpdateCurrentUser} />;
     }
     if (route === '/admin/profil') {
       return <AdminPage currentUser={currentUser} onLogout={handleLogout} onUpdateCurrentUser={handleUpdateCurrentUser} initialSection="profile" />;
