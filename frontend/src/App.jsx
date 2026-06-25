@@ -13,6 +13,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { AboutPage } from './pages/AboutPage';
 import { AdminPage } from './pages/AdminPage';
+import { Chatbot } from './components/Chatbot';
 import { categoryGroups } from './products';
 import { isStaffRole } from './constants/roles';
 import {
@@ -347,6 +348,7 @@ export function App() {
           updateQty={updateQty}
         />
       )}
+      {!isAdminRoute && <Chatbot />}
     </>
   );
 }

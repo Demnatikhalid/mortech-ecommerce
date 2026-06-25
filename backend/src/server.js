@@ -125,6 +125,104 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Backend server is running', timestamp: new Date() });
 });
 
+// Chatbot API using Gemini REST endpoint
+app.post('/api/chatbot', async (req, res, next) => {
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Messages are required and must be an array.' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(400).json({
+        error: 'missing_key',
+        message: 'Clé API Gemini non configurée dans le fichier backend/.env. Veuillez ajouter GEMINI_API_KEY=votre_cle.'
+      });
+    }
+
+    // Fetch all products from DB to feed the context
+    const dbProducts = await prisma.product.findMany({
+      select: {
+        name: true,
+        brand: true,
+        category: true,
+        subcategory: true,
+        price: true,
+        stock: true,
+        description: true
+      }
+    });
+
+    const productsListString = dbProducts.map(p => 
+      `- ${p.name} (Marque: ${p.brand || 'N/A'}, Categorie: ${p.category || 'N/A'}, Prix: ${p.price} DH, Stock: ${p.stock > 0 ? `${p.stock} unites` : 'Rupture de stock'})\n  Description: ${p.description || 'N/A'}`
+    ).join('\n');
+
+    const systemInstructionText = `Vous êtes Mortech Bot, l'assistant virtuel officiel de "Mortech Solution" (une boutique e-commerce de vidéosurveillance, matériel réseau, et domotique au Maroc).
+Votre rôle est d'assister les clients en répondant à leurs questions sur nos produits, en les conseillant sur leurs achats, en donnant des détails sur la qualité des produits, et en fournissant des conseils techniques ou astuces d'installation (par exemple pour configurer ou monter des caméras Dahua/Hikvision, des switchs PoE, ou des points d'accès Ruijie).
+
+Voici des instructions clés pour vos réponses :
+1. Langue : Répondez poliment en français (ou en arabe s'il s'agit de la langue du client).
+2. Produits de la boutique : Utilisez exclusivement la liste ci-dessous pour parler des prix, de la disponibilité, des marques ou des détails spécifiques des produits. Ne dites pas que nous vendons des produits qui ne sont pas dans la liste.
+3. Disponibilité/Stock : Si un produit a un stock de 0, il est en rupture de stock. Conseillez gentiment au client de contacter notre équipe commerciale par le formulaire de contact ou par WhatsApp pour en savoir plus ou demander un devis.
+4. Qualité et Choix : Expliquez la qualité professionnelle de nos marques (Dahua, Hikvision, Ruijie). Pour Hikvision/Dahua, ce sont des leaders mondiaux de la vidéosurveillance avec une qualité d'image exceptionnelle (vision nocturne, détection intelligente).
+5. Astuces d'installation : Donnez des conseils pratiques et professionnels. Par exemple :
+   - Pour les caméras IP : Mentionnez l'utilisation des logiciels constructeurs (Dahua ConfigTool, Hikvision SADP Tool) pour détecter et initialiser l'adresse IP de la caméra sur le réseau local. Expliquez qu'il faut brancher la caméra sur un Switch PoE ou un enregistreur NVR PoE pour l'alimentation et la transmission de données via un seul câble RJ45.
+   - Pour les caméras analogiques : Expliquez qu'elles nécessitent un enregistreur DVR et des câbles coaxiaux KX6 pour la transmission du signal vidéo et de l'alimentation.
+   - Pour les points d'accès (ex. Ruijie) : Indiquez de télécharger l'application Ruijie Cloud sur smartphone pour une configuration rapide et gratuite via le cloud.
+6. Ton : Professionnel, serviable, technique mais simple d'accès, chaleureux.
+
+Liste des produits actuellement en vente chez Mortech Solution :
+${productsListString}`;
+
+    // Map frontend messages roles (user -> user, bot/assistant -> model)
+    const geminiContents = messages.map(msg => {
+      const role = msg.role === 'user' ? 'user' : 'model';
+      let parts = [];
+      if (typeof msg.parts === 'string') {
+        parts = [{ text: msg.parts }];
+      } else if (Array.isArray(msg.parts)) {
+        parts = msg.parts.map(p => typeof p === 'string' ? { text: p } : p);
+      } else {
+        parts = [{ text: '' }];
+      }
+      return { role, parts };
+    });
+
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const geminiResponse = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: geminiContents,
+        systemInstruction: {
+          parts: [{ text: systemInstructionText }]
+        }
+      })
+    });
+
+    if (!geminiResponse.ok) {
+      const errText = await geminiResponse.text();
+      console.error('Gemini API error:', errText);
+      return res.status(502).json({ error: 'Failed to generate response from Gemini API', details: errText });
+    }
+
+    const geminiData = await geminiResponse.json();
+    const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!replyText) {
+      return res.status(502).json({ error: 'Invalid response structure from Gemini API', data: geminiData });
+    }
+
+    res.json({ reply: replyText });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Auth APIs
 app.post('/api/auth/register', async (req, res, next) => {
   try {
