@@ -91,7 +91,9 @@ export function App() {
     async function loadProducts() {
       try {
         setProductsLoading(true);
-        const response = await fetch('/api/products');
+        const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/products`
+);
         if (!response.ok) throw new Error(response.statusText || 'Erreur');
         const data = await response.json();
         setProducts(data || []);

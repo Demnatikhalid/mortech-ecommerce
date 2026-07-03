@@ -78,6 +78,7 @@ frontend/
    │   ├── CategoryBrowser.jsx
    │   ├── CategoryCatalog.jsx
    │   ├── CategoryShowcase.jsx
+   │   ├── Chatbot.jsx
    │   ├── ContactSection.jsx
    │   ├── Footer.jsx
    │   ├── Header.jsx
@@ -139,6 +140,7 @@ Créer un fichier `backend/.env` et définir au minimum :
 
 - `DATABASE_URL` pour PostgreSQL
 - `PORT` si vous voulez changer le port du serveur
+- `GEMINI_API_KEY` pour le fonctionnement du chatbot d’assistance IA
 - les variables SMTP si l’envoi d’e-mails est activé
 
 Exemple :
@@ -146,6 +148,7 @@ Exemple :
 ```env
 PORT=5000
 DATABASE_URL="postgresql://postgres:mortech_secure_password@localhost:5432/mortech_db?schema=public"
+GEMINI_API_KEY="votre_cle_api_gemini_ici"
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_SECURE=false
@@ -218,6 +221,7 @@ Les routes backend les plus importantes sont :
 - `GET /api/orders` : récupération des commandes et devis
 - `POST /api/orders` : création d’une commande ou d’un devis
 - `PATCH /api/orders/:id` : mise à jour du statut d’une commande
+- `POST /api/chatbot` : chatbot d'assistance client utilisant l'API Gemini
 
 ## Interface Frontend
 
