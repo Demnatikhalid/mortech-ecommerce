@@ -113,16 +113,21 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
     setProfileStatus({ loading: true, error: '', success: '' });
 
     try {
-      const response = await fetch(`/api/users/${currentUser.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: profileForm.name,
-          email: profileForm.email,
-          phone: profileForm.phone,
-          company: profileForm.company,
-        }),
-      });
+      const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/users/${currentUser.id}`,
+  {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: profileForm.name,
+      email: profileForm.email,
+      phone: profileForm.phone,
+      company: profileForm.company,
+    }),
+  }
+);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'Impossible de mettre à jour le profil');
@@ -139,15 +144,17 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
     setLoading(true);
     setError('');
     try {
-      const requests = [
-        fetch('/api/products'),
-        fetch('/api/orders'),
-        fetch('/api/users'),
-        fetch('/api/claims'),
-      ];
+     const API_URL = import.meta.env.VITE_API_URL;
+
+const requests = [
+  fetch(`${API_URL}/api/products`),
+  fetch(`${API_URL}/api/orders`),
+  fetch(`${API_URL}/api/users`),
+  fetch(`${API_URL}/api/claims`),
+];
 
       if (currentUser.role === ROLES.ADMIN) {
-        requests.push(fetch('/api/admin/stats'));
+       requests.push(fetch(`${API_URL}/api/admin/stats`));
       }
 
       const responses = await Promise.all(requests);
@@ -173,7 +180,7 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
   }
 
   async function updateOrderStatus(orderId, status) {
-    const response = await fetch(`/api/orders/${orderId}`, {
+    const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -184,7 +191,7 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
   }
 
   async function updateClaimStatus(claimId, status) {
-    const response = await fetch(`/api/claims/${claimId}`, {
+    const response = await fetch(`${API_URL}/api/claims/${claimId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -198,7 +205,7 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
     event.preventDefault();
     setError('');
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch(`${API_URL}/api/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -229,7 +236,7 @@ export function AdminPage({ currentUser, onLogout, onUpdateCurrentUser, initialS
 
   async function handleDeleteUser(userId) {
     if (!window.confirm('Supprimer cet utilisateur ?')) return;
-    const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+      const response = await fetch(`${API_URL}/api/users/${userId}`, { method: 'DELETE' });
     if (!response.ok) {
       setError('Suppression impossible');
       return;

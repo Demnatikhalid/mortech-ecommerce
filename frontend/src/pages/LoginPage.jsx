@@ -114,14 +114,13 @@ export function LoginPage({ onLoginSuccess }) {
         throw new Error('Veuillez cocher le reCAPTCHA avant de continuer.');
       }
 
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, recaptchaToken }),
-      });
-
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ email, password, recaptchaToken }),
+});
       const data = await response.json();
 
       if (!response.ok) {

@@ -46,12 +46,11 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
       throw new Error('Validation reCAPTCHA requise.');
     }
 
-    const response = await fetch('/api/verify-recaptcha', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recaptchaToken })
-    });
-
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/verify-recaptcha`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ recaptchaToken })
+});
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.error || 'Échec de la validation reCAPTCHA');
@@ -72,19 +71,19 @@ export function CartPage({ cart, total, updateQty, currentUser, clearCart }) {
     setError('');
     setCaptchaError('');
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          items: cart,
-          total: total,
-          status: orderStatus,
-          recaptchaToken
-        })
-      });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    userId: currentUser.id,
+    items: cart,
+    total: total,
+    status: orderStatus,
+    recaptchaToken
+  })
+});
 
       const data = await response.json();
       if (!response.ok) {

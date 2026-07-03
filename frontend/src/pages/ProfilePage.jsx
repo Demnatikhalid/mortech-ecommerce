@@ -203,7 +203,9 @@ export function ProfilePage({ currentUser, onLogout, onUpdateCurrentUser }) {
     try {
       setOrdersLoading(true);
       setOrdersError('');
-      const response = await fetch(`/api/orders?userId=${currentUser.id}`);
+      const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/orders?userId=${currentUser.id}`
+);
       if (!response.ok) throw new Error('Impossible de charger vos commandes');
       const data = await response.json();
       setOrders(data);
@@ -247,11 +249,14 @@ export function ProfilePage({ currentUser, onLogout, onUpdateCurrentUser }) {
     setError('');
     setSuccess('');
     try {
-      const response = await fetch(`/api/users/${currentUser.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmed }),
-      });
+      const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/users/${currentUser.id}`,
+  {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: trimmed }),
+  }
+);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'Impossible de mettre à jour le profil');
