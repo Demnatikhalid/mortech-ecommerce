@@ -14,15 +14,18 @@ const originalFetch = window.fetch;
 // Bootstrap function to fetch CSRF cookie if it does not exist
 const ensureCsrfToken = async () => {
   let token = getCookie('csrf_token');
+
   if (!token) {
     try {
-      // Fast GET request to API health endpoint to trigger WAF CSRF token generation
-      await originalFetch('/api/health');
+      // URL de ton backend Railway
+      await originalFetch(`${import.meta.env.VITE_API_URL}/api/health`);
+
       token = getCookie('csrf_token');
     } catch (e) {
       console.warn('WAF CSRF bootstrap failed:', e);
     }
   }
+
   return token;
 };
 
