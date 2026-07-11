@@ -136,26 +136,24 @@ frontend/
 
 ## Configuration du backend
 
-Créer un fichier `backend/.env` et définir au minimum :
+Pour configurer le serveur backend, dupliquez le fichier modèle `.env.example` dans le dossier `backend` et nommez-le `.env` :
 
-- `DATABASE_URL` pour PostgreSQL
-- `PORT` si vous voulez changer le port du serveur
-- `GEMINI_API_KEY` pour le fonctionnement du chatbot d’assistance IA
-- les variables SMTP si l’envoi d’e-mails est activé
-
-Exemple :
-
-```env
-PORT=5000
-DATABASE_URL="postgresql://postgres:mortech_secure_password@localhost:5432/mortech_db?schema=public"
-GEMINI_API_KEY="votre_cle_api_gemini_ici"
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-smtp-username
-SMTP_PASS=your-smtp-password
-SMTP_FROM=no-reply@mortech-solutions.ma
+```bash
+cd backend
+cp .env.example .env
 ```
+
+Puis, ouvrez le fichier `.env` pour définir vos variables d'environnement locales.
+
+> [!WARNING]
+> Les fichiers `.env` contiennent des informations hautement sensibles (mots de passe de base de données, clés API Gemini, etc.). Ils sont exclus du suivi Git via le fichier `.gitignore` pour des raisons de sécurité. **Ne validez jamais vos fichiers `.env` dans le dépôt de code.**
+
+Définissez au minimum :
+
+- `DATABASE_URL` : URL de connexion à votre base PostgreSQL.
+- `PORT` : Port d'écoute du serveur backend (par défaut `5000`).
+- `GEMINI_API_KEY` : Clé d'API Gemini (nécessaire pour le fonctionnement de l'assistant virtuel).
+- `MAIL_USER` et `MAIL_PASS` : Identifiants SMTP si l'envoi d'e-mails est activé.
 
 ## Commandes utiles
 
@@ -201,6 +199,7 @@ Le frontend est accessible sur `http://127.0.0.1:5173` ou sur l’adresse indiqu
 - Envoi d’un e-mail de bienvenue
 - Génération de PDF pour certains flux métier
 - Scripts de seed et de maintenance des données
+- **Assistant Virtuel Intelligent (Chatbot)** : Intégration de l'API Gemini 2.5 Flash pour conseiller les clients et répondre à leurs questions sur les produits Mortech. Inclut un historique de discussion persistant (stocké localement), un panneau latéral coulissant d'historique (style ChatGPT) avec création de nouvelles sessions, édition et renommage à la volée, ainsi que suppression des conversations passées.
 
 ## API Principale
 
