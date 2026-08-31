@@ -3,11 +3,19 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import prisma from './db.js';
 import { seedProducts } from './seedData.js';
 import { sendCartValidatedEmail, sendQuotePdfEmail } from './orderEmails.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
+
+
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -189,32 +197,49 @@ ${productsListString}`;
       return { role, parts };
     });
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const candidateModels = [
+      process.env.GEMINI_MODEL,
+      'gemini-3.5-flash',
+      'gemini-3.6-flash',
+      'gemini-flash-latest'
+    ].filter(Boolean);
 
-    const geminiResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: geminiContents,
-        systemInstruction: {
-          parts: [{ text: systemInstructionText }]
+    let replyText = null;
+    let lastError = null;
+
+    for (const model of candidateModels) {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const geminiResponse = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: geminiContents,
+            systemInstruction: {
+              parts: [{ text: systemInstructionText }]
+            }
+          })
+        });
+
+        if (geminiResponse.ok) {
+          const geminiData = await geminiResponse.json();
+          replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (replyText) break;
+        } else {
+          lastError = await geminiResponse.text();
+          console.warn(`[Chatbot] Model ${model} failed:`, lastError);
         }
-      })
-    });
-
-    if (!geminiResponse.ok) {
-      const errText = await geminiResponse.text();
-      console.error('Gemini API error:', errText);
-      return res.status(502).json({ error: 'Failed to generate response from Gemini API', details: errText });
+      } catch (err) {
+        lastError = err.message;
+        console.warn(`[Chatbot] Model ${model} request error:`, err);
+      }
     }
 
-    const geminiData = await geminiResponse.json();
-    const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-
     if (!replyText) {
-      return res.status(502).json({ error: 'Invalid response structure from Gemini API', data: geminiData });
+      console.error('All Gemini candidate models failed. Last error:', lastError);
+      return res.status(502).json({ error: 'Failed to generate response from Gemini API', details: lastError });
     }
 
     res.json({ reply: replyText });
