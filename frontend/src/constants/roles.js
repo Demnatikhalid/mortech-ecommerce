@@ -10,12 +10,14 @@ export const ROLE_LABELS = {
 
 export const ADMIN_SECTIONS = [
   { id: 'stats', label: 'Voir statistiques' },
+  { id: 'assistant', label: 'Assistant IA Admin' },
   { id: 'profile', label: 'Profil admin' },
   { id: 'inventory', label: 'Gérer inventaire' },
   { id: 'products', label: 'Ajouter produits' },
   { id: 'quotes', label: 'Traiter devis client' },
   { id: 'orders', label: 'Traiter commandes client' },
   { id: 'users', label: 'Gérer utilisateurs' },
+  { id: 'claims', label: 'Gérer réclamations' },
 ];
 
 export function isStaffRole(role) {

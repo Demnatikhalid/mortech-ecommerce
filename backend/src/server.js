@@ -1,19 +1,12 @@
+import './loadEnv.js';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import prisma from './db.js';
 import { seedProducts } from './seedData.js';
 import { sendCartValidatedEmail, sendQuotePdfEmail } from './orderEmails.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config();
 
 
 
@@ -55,6 +48,9 @@ async function verifyRecaptchaToken(token) {
   });
 
   const data = await response.json();
+  if (!data.success) {
+    console.warn('[reCAPTCHA validation failed]:', data);
+  }
   return data.success === true;
 }
 
@@ -136,7 +132,7 @@ app.get('/api/health', (req, res) => {
 // Chatbot API using Gemini REST endpoint
 app.post('/api/chatbot', async (req, res, next) => {
   try {
-    const { messages } = req.body;
+    const { messages, isAdmin } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'Messages are required and must be an array.' });
     }
@@ -149,9 +145,10 @@ app.post('/api/chatbot', async (req, res, next) => {
       });
     }
 
-    // Fetch all products from DB to feed the context
+    // Fetch products from DB
     const dbProducts = await prisma.product.findMany({
       select: {
+        id: true,
         name: true,
         brand: true,
         category: true,
@@ -162,11 +159,56 @@ app.post('/api/chatbot', async (req, res, next) => {
       }
     });
 
-    const productsListString = dbProducts.map(p => 
-      `- ${p.name} (Marque: ${p.brand || 'N/A'}, Categorie: ${p.category || 'N/A'}, Prix: ${p.price} DH, Stock: ${p.stock > 0 ? `${p.stock} unites` : 'Rupture de stock'})\n  Description: ${p.description || 'N/A'}`
-    ).join('\n');
+    let systemInstructionText = '';
 
-    const systemInstructionText = `Vous êtes Mortech Bot, l'assistant virtuel officiel de "Mortech Solution" (une boutique e-commerce de vidéosurveillance, matériel réseau, et domotique au Maroc).
+    if (isAdmin) {
+      // Fetch comprehensive store metrics for Admin
+      const [orders, userCount, pendingClaims] = await Promise.all([
+        prisma.order.findMany({ select: { id: true, total: true, status: true, createdAt: true } }),
+        prisma.user.count(),
+        prisma.claim.findMany({ where: { status: 'PENDING' }, select: { id: true, subject: true, createdAt: true } })
+      ]);
+
+      const quotesCount = orders.filter(o => o.status === 'DEVIS').length;
+      const validOrders = orders.filter(o => o.status !== 'CANCELLED' && o.status !== 'DEVIS');
+      const totalRevenue = validOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+      const pendingOrders = orders.filter(o => o.status === 'PENDING').length;
+      const confirmedOrders = orders.filter(o => o.status === 'CONFIRMED' || o.status === 'PROCESSING').length;
+      const deliveredOrders = orders.filter(o => o.status === 'DELIVERED' || o.status === 'COMPLETED').length;
+
+      const outOfStock = dbProducts.filter(p => p.stock <= 0);
+      const lowStock = dbProducts.filter(p => p.stock > 0 && p.stock <= 5);
+
+      const productsListString = dbProducts.map(p =>
+        `- [#${p.id}] ${p.name} | Marque: ${p.brand || 'N/A'} | Cat: ${p.category || 'N/A'} | Prix: ${p.price} DH | Stock: ${p.stock}`
+      ).join('\n');
+
+      systemInstructionText = `Vous êtes l'Assistant IA Super-Administrateur de "Mortech Solution" (e-commerce marocain : vidéosurveillance, matériel réseau, domotique et contrôle d'accès).
+Votre rôle est d'épauler la direction et l'équipe d'administration dans la gestion quotidienne de la boutique, l'analyse des ventes, le suivi des stocks et des commandes, et les décisions stratégiques.
+
+📊 DONNÉES EN TEMPS RÉEL DU SYSTÈME :
+- Chiffre d'affaires total validé : ${totalRevenue.toFixed(2)} MAD (DH)
+- Commandes : Total ${orders.length} (En attente : ${pendingOrders}, En traitement/Confirmées : ${confirmedOrders}, Livrées/Terminées : ${deliveredOrders})
+- Devis émis : ${quotesCount}
+- Utilisateurs enregistrés : ${userCount}
+- Réclamations clients en attente de traitement : ${pendingClaims.length} ${pendingClaims.length > 0 ? `(Sujets : ${pendingClaims.map(c => `"${c.subject}"`).join(', ')})` : ''}
+- Produits en rupture totale (stock 0) : ${outOfStock.length} (${outOfStock.slice(0, 8).map(p => p.name).join(', ') || 'Aucun'})
+- Produits en stock faible (<= 5 unités) : ${lowStock.length} (${lowStock.slice(0, 8).map(p => `${p.name} [${p.stock} restants]`).join(', ') || 'Aucun'})
+- Nombre total de références au catalogue : ${dbProducts.length}
+
+DIRECTIVES POUR L'ASSISTANT ADMIN :
+1. Rôle : Conseiller de gestion, analyste business et support technique avancé pour l'administrateur.
+2. Style : Professionnel, synthétique, axé sur les chiffres, la rentabilité et les actions concrètes à mener. Utilisez des listes à puces et des emojis clairs.
+3. Alertes : Signalez proactivement les alertes de stock (ruptures ou stocks faibles) et les réclamations/commandes en attente si la question s'y prête.
+4. Conseils : Vous pouvez suggérer des stratégies de réapprovisionnement, des idées de bundles promotionnels (ex. packs caméra + NVR + câble + switch PoE), ou des analyses de performance de marque (Dahua vs Hikvision vs Ruijie).
+5. Catalogue complet des produits :
+${productsListString}`;
+    } else {
+      const productsListString = dbProducts.map(p => 
+        `- ${p.name} (Marque: ${p.brand || 'N/A'}, Categorie: ${p.category || 'N/A'}, Prix: ${p.price} DH, Stock: ${p.stock > 0 ? `${p.stock} unites` : 'Rupture de stock'})\n  Description: ${p.description || 'N/A'}`
+      ).join('\n');
+
+      systemInstructionText = `Vous êtes Mortech Bot, l'assistant virtuel officiel de "Mortech Solution" (une boutique e-commerce de vidéosurveillance, matériel réseau, et domotique au Maroc).
 Votre rôle est d'assister les clients en répondant à leurs questions sur nos produits, en les conseillant sur leurs achats, en donnant des détails sur la qualité des produits, et en fournissant des conseils techniques ou astuces d'installation (par exemple pour configurer ou monter des caméras Dahua/Hikvision, des switchs PoE, ou des points d'accès Ruijie).
 
 Voici des instructions clés pour vos réponses :
@@ -182,6 +224,7 @@ Voici des instructions clés pour vos réponses :
 
 Liste des produits actuellement en vente chez Mortech Solution :
 ${productsListString}`;
+    }
 
     // Map frontend messages roles (user -> user, bot/assistant -> model)
     const geminiContents = messages.map(msg => {

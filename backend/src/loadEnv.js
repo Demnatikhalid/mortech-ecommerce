@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,3 +23,7 @@ if (!fs.existsSync(envPath)) {
     console.error('[loadEnv] ERREUR : Ni .env ni .env.example trouvés dans backend/. Le serveur risque de mal fonctionner.');
   }
 }
+
+dotenv.config({ path: envPath });
+dotenv.config();
+

@@ -1,23 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Bot, AlertTriangle, Plus, Trash2, Edit2, Check, History } from 'lucide-react';
+import { MessageSquare, Send, X, Bot, AlertTriangle, Plus, Trash2, Edit2, Check, History, Sparkles, ShieldCheck } from 'lucide-react';
 
-const SUGGESTIONS = [
+const CLIENT_SUGGESTIONS = [
   "Quels produits de vidéosurveillance proposez-vous ?",
   "Comment configurer ou installer une caméra IP ?",
   "Quelle est la qualité des produits Dahua et Hikvision ?",
   "Avez-vous des points d'accès Ruijie en stock ?"
 ];
 
-const createInitialSession = () => {
+const ADMIN_SUGGESTIONS = [
+  "📊 Chiffre d'affaires & bilan des ventes",
+  "⚠️ Produits en rupture ou stock critique",
+  "📦 Commandes & devis en attente",
+  "🛠️ Réclamations clients à traiter",
+  "💡 Conseils de réapprovisionnement"
+];
+
+const createInitialSession = (isAdmin = false) => {
   return {
     id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    title: 'Nouvelle discussion',
+    title: isAdmin ? 'Session Gestion Admin' : 'Nouvelle discussion',
     messages: [
       {
         role: 'model',
         parts: [
           {
-            text: "Bonjour ! Je suis l'assistant virtuel de Mortech Solution. \n\nComment puis-je vous aider aujourd'hui ? Je peux vous renseigner sur les détails et prix de nos produits, ou vous donner des conseils d'installation pour nos caméras et équipements réseaux !"
+            text: isAdmin
+              ? "Bonjour ! Je suis votre Assistant IA de gestion Mortech Solution.\n\nJe suis connecté en direct aux données du système pour vous assister : statistiques de ventes, suivi des commandes, alertes de rupture de stock, analyse des réclamations clients et recommandations de catalogue."
+              : "Bonjour ! Je suis l'assistant virtuel de Mortech Solution. \n\nComment puis-je vous aider aujourd'hui ? Je peux vous renseigner sur les détails et prix de nos produits, ou vous donner des conseils d'installation pour nos caméras et équipements réseaux !"
           }
         ]
       }
@@ -26,13 +36,18 @@ const createInitialSession = () => {
   };
 };
 
-export function Chatbot() {
+export function Chatbot({ currentUser }) {
+  const isAdmin = currentUser?.role === 'admin';
+  const suggestions = isAdmin ? ADMIN_SUGGESTIONS : CLIENT_SUGGESTIONS;
+  const storageKey = isAdmin ? 'mortech_admin_chat_sessions' : 'mortech_chat_sessions';
+  const activeSessionKey = isAdmin ? 'mortech_admin_chat_active_session_id' : 'mortech_chat_active_session_id';
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
   
   const [sessions, setSessions] = useState(() => {
     try {
-      const saved = localStorage.getItem('mortech_chat_sessions');
+      const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -42,12 +57,12 @@ export function Chatbot() {
     } catch (e) {
       console.error('Error loading sessions', e);
     }
-    return [createInitialSession()];
+    return [createInitialSession(isAdmin)];
   });
 
   const [activeSessionId, setActiveSessionId] = useState(() => {
     try {
-      const saved = localStorage.getItem('mortech_chat_active_session_id');
+      const saved = localStorage.getItem(activeSessionKey);
       if (saved) return saved;
     } catch (e) {}
     return '';
@@ -105,7 +120,7 @@ export function Chatbot() {
 
           // Auto-generate title from user's first message if title is default
           let newTitle = s.title;
-          if (s.title === 'Nouvelle discussion') {
+          if (s.title === 'Nouvelle discussion' || s.title === 'Session Gestion Admin') {
             const firstUserMessage = nextMessages.find(m => m.role === 'user');
             if (firstUserMessage) {
               const text = firstUserMessage.parts[0]?.text || '';
@@ -122,20 +137,20 @@ export function Chatbot() {
         }
         return s;
       });
-      localStorage.setItem('mortech_chat_sessions', JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       return updated;
     });
   };
 
   const handleNewChat = () => {
-    const newSess = createInitialSession();
+    const newSess = createInitialSession(isAdmin);
     setSessions(prev => {
       const updated = [newSess, ...prev];
-      localStorage.setItem('mortech_chat_sessions', JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       return updated;
     });
     setActiveSessionId(newSess.id);
-    localStorage.setItem('mortech_chat_active_session_id', newSess.id);
+    localStorage.setItem(activeSessionKey, newSess.id);
     setError(null);
     setInput('');
     if (window.innerWidth < 768) {
@@ -145,7 +160,7 @@ export function Chatbot() {
 
   const handleSelectSession = (id) => {
     setActiveSessionId(id);
-    localStorage.setItem('mortech_chat_active_session_id', id);
+    localStorage.setItem(activeSessionKey, id);
     setError(null);
     setInput('');
     if (window.innerWidth < 768) {
@@ -158,14 +173,14 @@ export function Chatbot() {
     setSessions(prev => {
       let updated = prev.filter(s => s.id !== id);
       if (updated.length === 0) {
-        updated = [createInitialSession()];
+        updated = [createInitialSession(isAdmin)];
       }
-      localStorage.setItem('mortech_chat_sessions', JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       
       if (resolvedActiveSessionId === id) {
         const nextActiveId = updated[0].id;
         setActiveSessionId(nextActiveId);
-        localStorage.setItem('mortech_chat_active_session_id', nextActiveId);
+        localStorage.setItem(activeSessionKey, nextActiveId);
       }
       return updated;
     });
@@ -181,7 +196,7 @@ export function Chatbot() {
     if (!editingTitle.trim()) return;
     setSessions(prev => {
       const updated = prev.map(s => s.id === id ? { ...s, title: editingTitle.trim() } : s);
-      localStorage.setItem('mortech_chat_sessions', JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       return updated;
     });
     setEditingSessionId(null);
@@ -209,15 +224,15 @@ export function Chatbot() {
     const newMessages = [...messages, { role: 'user', parts: [{ text }] }];
     updateActiveSessionMessages(newMessages);
     setLoading(true);
-
     try {
-     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chatbot`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ messages: newMessages })
-});
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${baseUrl}/api/chatbot`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ messages: newMessages, isAdmin })
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -404,12 +419,28 @@ export function Chatbot() {
                 >
                   <History size={18} />
                 </button>
-                <Bot size={22} />
+                {isAdmin ? <ShieldCheck size={22} style={{ color: 'var(--brand)' }} /> : <Bot size={22} />}
                 <div>
-                  <h3 className="chatbot-header-title">Assistant Mortech</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h3 className="chatbot-header-title">{isAdmin ? 'Assistant IA Gestion' : 'Assistant Mortech'}</h3>
+                    {isAdmin && (
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        background: 'linear-gradient(135deg, #075cb8, #0d8b67)',
+                        color: '#fff',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        letterSpacing: '0.5px'
+                      }}>
+                        Admin
+                      </span>
+                    )}
+                  </div>
                   <div className="chatbot-status">
                     <span className="chatbot-status-dot"></span>
-                    <span>En ligne</span>
+                    <span>{isAdmin ? 'Connecté aux métriques' : 'En ligne'}</span>
                   </div>
                 </div>
               </div>
@@ -459,9 +490,9 @@ export function Chatbot() {
               {!loading && !error && messages.length === 1 && (
                 <div className="chatbot-chips-container">
                   <p style={{ margin: '8px 0 4px', fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>
-                    Questions fréquentes :
+                    {isAdmin ? 'Analyses & Actions rapides :' : 'Questions fréquentes :'}
                   </p>
-                  {SUGGESTIONS.map((sug, sIdx) => (
+                  {suggestions.map((sug, sIdx) => (
                     <button 
                       key={sIdx}
                       className="chatbot-chip"

@@ -350,7 +350,7 @@ export function App() {
           updateQty={updateQty}
         />
       )}
-      {!isAdminRoute && <Chatbot />}
+      <Chatbot currentUser={currentUser} />
     </>
   );
 }

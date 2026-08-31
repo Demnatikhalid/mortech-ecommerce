@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   BarChart3,
   Boxes,
@@ -11,6 +11,11 @@ import {
   User,
   Users,
   Wrench,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
+  Send,
+  Bot
 } from 'lucide-react';
 import { Link } from '../components/Link';
 import { formatPrice } from '../helpers';
@@ -23,6 +28,7 @@ import {
 
 const sectionIcons = {
   stats: BarChart3,
+  assistant: Sparkles,
   profile: User,
   inventory: Boxes,
   products: PackagePlus,
@@ -47,6 +53,207 @@ const orderStatusLabels = {
   COMPLETED: 'Terminée',
   CANCELLED: 'Annulée',
 };
+
+function AdminAIAssistantSection({ stats, products, orders, claims }) {
+  const [messages, setMessages] = useState([
+    {
+      role: 'model',
+      parts: [
+        {
+          text: "Bonjour M. l'Administrateur ! Je suis votre Assistant IA de gestion Mortech Solution.\n\nJe suis connecté en direct aux données de votre boutique. Posez-moi des questions sur vos ventes, vos ruptures de stock, vos commandes en attente ou demandez-moi des conseils d'optimisation de catalogue et de gestion !"
+        }
+      ]
+    }
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  async function handleSend(textToSend) {
+    const text = (textToSend || input).trim();
+    if (!text) return;
+
+    if (!textToSend) setInput('');
+    setError(null);
+    const newMessages = [...messages, { role: 'user', parts: [{ text }] }];
+    setMessages(newMessages);
+    setLoading(true);
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${baseUrl}/api/chatbot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages, isAdmin: true })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Une erreur est survenue lors de la communication.');
+      }
+
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: 'model', parts: [{ text: data.reply }] }]);
+    } catch (err) {
+      setError(err.message || 'Impossible de contacter l’Assistant IA.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function formatMessage(text) {
+    if (!text) return null;
+    const blocks = text.split('\n\n');
+    return blocks.map((block, bIdx) => {
+      const lines = block.split('\n');
+      const isBulletList = lines.length > 0 && lines.every(line => line.trim().startsWith('- ') || line.trim().startsWith('* '));
+      if (isBulletList) {
+        return (
+          <ul key={bIdx} style={{ margin: '8px 0', paddingLeft: '20px', listStyleType: 'disc' }}>
+            {lines.map((line, lIdx) => {
+              const cleanText = line.trim().replace(/^[\-\*]\s+/, '');
+              return <li key={lIdx} dangerouslySetInnerHTML={{ __html: parseInlineStyles(cleanText) }} />;
+            })}
+          </ul>
+        );
+      }
+      const paragraphHtml = lines.map(line => parseInlineStyles(line)).join('<br/>');
+      return <p key={bIdx} dangerouslySetInnerHTML={{ __html: paragraphHtml }} />;
+    });
+  }
+
+  function parseInlineStyles(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`(.*?)`/g, '<code style="background: rgba(0,0,0,0.06); padding: 2px 4px; border-radius: 4px; font-family: monospace;">$1</code>');
+  }
+
+  const quickPrompts = [
+    "📊 Fais-moi une synthèse globale du chiffre d'affaires et des commandes",
+    "⚠️ Quels sont les produits en rupture totale ou stock critique ?",
+    "📦 Analyse l'état des commandes et des devis en attente",
+    "🛠️ Résume les réclamations clients et donne des priorités",
+    "💡 Propose des packs promotionnels pour booster les ventes"
+  ];
+
+  return (
+    <div className="admin-ai-workspace">
+      <div className="admin-ai-telemetry-grid">
+        <div className="admin-ai-telemetry-card">
+          <TrendingUp size={24} />
+          <div>
+            <span>Chiffre d'affaires</span>
+            <strong>{formatPrice(stats?.revenue ?? 0)}</strong>
+          </div>
+        </div>
+        <div className="admin-ai-telemetry-card">
+          <ClipboardList size={24} />
+          <div>
+            <span>Commandes totales</span>
+            <strong>{orders.length}</strong>
+          </div>
+        </div>
+        <div className="admin-ai-telemetry-card">
+          <AlertTriangle size={24} style={{ color: '#e53935' }} />
+          <div>
+            <span>Alertes stock</span>
+            <strong>{stats?.lowStockCount ?? 0} produit(s)</strong>
+          </div>
+        </div>
+        <div className="admin-ai-telemetry-card">
+          <Wrench size={24} style={{ color: '#7c3aed' }} />
+          <div>
+            <span>Réclamations en attente</span>
+            <strong>{claims.filter(c => c.status === 'PENDING').length}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="admin-ai-chat-box">
+        <div className="admin-ai-chat-header">
+          <div className="admin-ai-chat-header-info">
+            <Sparkles size={22} style={{ color: 'var(--brand)' }} />
+            <div>
+              <h3>Console Assistant IA Super-Admin</h3>
+              <p>Analyse prédictive, requêtes directes et aide à la décision</p>
+            </div>
+          </div>
+          <button className="secondary-button" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => setMessages([messages[0]])}>
+            Effacer conversation
+          </button>
+        </div>
+
+        <div className="admin-ai-quick-bar">
+          <span>Actions recommandées :</span>
+          {quickPrompts.map((prompt, pIdx) => (
+            <button key={pIdx} className="admin-ai-quick-btn" onClick={() => handleSend(prompt)}>
+              {prompt}
+            </button>
+          ))}
+        </div>
+
+        <div className="chatbot-messages" style={{ flex: 1, padding: '16px 20px', overflowY: 'auto' }}>
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`chatbot-msg-row ${msg.role}`}>
+              <div className="chatbot-msg-bubble">
+                {formatMessage(msg.parts[0]?.text)}
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="chatbot-msg-row model">
+              <div className="chatbot-msg-bubble" style={{ padding: '8px 12px' }}>
+                <div className="chatbot-typing-indicator">
+                  <span className="chatbot-typing-dot"></span>
+                  <span className="chatbot-typing-dot"></span>
+                  <span className="chatbot-typing-dot"></span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="chatbot-error-alert">
+              <AlertTriangle size={16} style={{ display: 'inline', marginRight: '6px' }} />
+              {error}
+            </div>
+          )}
+
+          <div ref={chatEndRef} />
+        </div>
+
+        <div className="chatbot-input-area">
+          <input
+            type="text"
+            className="chatbot-input-field"
+            placeholder="Posez une question sur vos ventes, stocks, clients ou le catalogue..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            disabled={loading}
+          />
+          <button className="chatbot-send-btn" onClick={() => handleSend()} disabled={loading || !input.trim()}>
+            <Send size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function StatCard({ label, value, accent }) {
   return (
@@ -340,6 +547,16 @@ const requests = [
             <StatCard label="Stock faible" value={stats?.lowStockCount ?? 0} accent="#e53935" />
             <StatCard label="Chiffre d'affaires" value={formatPrice(stats?.revenue ?? 0)} accent="#0d8b67" />
           </div>
+        );
+
+      case 'assistant':
+        return (
+          <AdminAIAssistantSection
+            stats={stats}
+            products={products}
+            orders={orders}
+            claims={claims}
+          />
         );
 
       case 'profile':
