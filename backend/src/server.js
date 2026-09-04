@@ -6,6 +6,9 @@ import nodemailer from 'nodemailer';
 import prisma from './db.js';
 import { seedProducts } from './seedData.js';
 import { sendCartValidatedEmail, sendQuotePdfEmail } from './orderEmails.js';
+import { adminToolsSchema } from './agentSchema.js';
+import { adminToolHandlers } from './agentTools.js';
+
 
 
 
@@ -183,8 +186,8 @@ app.post('/api/chatbot', async (req, res, next) => {
         `- [#${p.id}] ${p.name} | Marque: ${p.brand || 'N/A'} | Cat: ${p.category || 'N/A'} | Prix: ${p.price} DH | Stock: ${p.stock}`
       ).join('\n');
 
-      systemInstructionText = `Vous êtes l'Assistant IA Super-Administrateur de "Mortech Solution" (e-commerce marocain : vidéosurveillance, matériel réseau, domotique et contrôle d'accès).
-Votre rôle est d'épauler la direction et l'équipe d'administration dans la gestion quotidienne de la boutique, l'analyse des ventes, le suivi des stocks et des commandes, et les décisions stratégiques.
+      systemInstructionText = `Vous êtes l'Agent IA Super-Administrateur Autonome de "Mortech Solution" (e-commerce marocain : vidéosurveillance, matériel réseau, domotique et contrôle d'accès).
+Votre rôle est d'épauler la direction dans la gestion quotidienne de la boutique et d'exécuter des actions concrètes via vos outils de Function Calling (Tool Calling) sur la base de données PostgreSQL.
 
 📊 DONNÉES EN TEMPS RÉEL DU SYSTÈME :
 - Chiffre d'affaires total validé : ${totalRevenue.toFixed(2)} MAD (DH)
@@ -196,12 +199,29 @@ Votre rôle est d'épauler la direction et l'équipe d'administration dans la ge
 - Produits en stock faible (<= 5 unités) : ${lowStock.length} (${lowStock.slice(0, 8).map(p => `${p.name} [${p.stock} restants]`).join(', ') || 'Aucun'})
 - Nombre total de références au catalogue : ${dbProducts.length}
 
-DIRECTIVES POUR L'ASSISTANT ADMIN :
-1. Rôle : Conseiller de gestion, analyste business et support technique avancé pour l'administrateur.
-2. Style : Professionnel, synthétique, axé sur les chiffres, la rentabilité et les actions concrètes à mener. Utilisez des listes à puces et des emojis clairs.
-3. Alertes : Signalez proactivement les alertes de stock (ruptures ou stocks faibles) et les réclamations/commandes en attente si la question s'y prête.
-4. Conseils : Vous pouvez suggérer des stratégies de réapprovisionnement, des idées de bundles promotionnels (ex. packs caméra + NVR + câble + switch PoE), ou des analyses de performance de marque (Dahua vs Hikvision vs Ruijie).
-5. Catalogue complet des produits :
+DIRECTIVES POUR L'AGENT ADMIN :
+1. Autonomie & Exécution d'Outils (Tool Calling) :
+   - Dès que l'administrateur vous donne une instruction d'action opérationnelle, VOUS DEVEZ IMPÉRATIVEMENT APPELER L'OUTIL CORRESPONDANT.
+   - Ne prétendez JAMAIS avoir fait une action sans avoir appelé le functionCall approprié.
+   - Outils à votre disposition :
+     * Gestion des Produits & Stocks : admin_create_product, admin_update_product, admin_update_product_stock, admin_update_product_price, admin_delete_product.
+     * Devis & Commandes : admin_list_quotes, admin_update_quote_status, admin_convert_quote_to_order, admin_list_orders, admin_update_order_status.
+     * SAV & Réclamations : admin_list_claims, admin_update_claim_status.
+     * Gestion Clients/Utilisateurs : admin_create_user, admin_update_user, admin_delete_user, admin_list_users.
+     * Analytics & Ventes : admin_get_sales_analytics.
+2. Arborescence stricte des catégories et sous-catégories de la boutique :
+   Pour que les produits s'affichent correctement dans le catalogue et les filtres de la boutique, vous DEVEZ utiliser exclusivement ces catégories officielles :
+   - 'Materiel Informatique' -> sous-catégories : 'Cartes memoire', 'HDD', 'SSDs', 'Stockage portable', 'RAM'
+   - 'Videosurveillance' -> sous-catégories : 'Camera Analog Hikvision', 'Camera IP Hikvision', 'DVR Hikvision', 'NVR Hikvision', 'Videophone Hikvision', 'Camera Analog Dahua', 'Camera IP Dahua', 'XVR Dahua', 'NVR Dahua', 'Videophone Dahua'
+   - 'Equipement Reseaux' -> sous-catégories : 'Armoire Informatique Etanche', 'Armoire Informatique', "Accessoires d'Armoire", 'Switch TP-Link', 'Switch PoE', 'Switch 8 port', 'Switch 16 port', 'Switch 24 port'
+   - 'Domotique' -> sous-catégories : 'TAHOMA SOMFY', 'AKUVOX', 'Tuya', 'Sonoff', 'Shelly'
+   - 'Controle Dacces et Pointeuse' -> sous-catégories : "Controle d'acces hikvision", 'Serrure intelligente', "Controle D'acces ZKTeco", "Controle D'acces Dahua", 'Pointeuse hikvision', 'Pointeuse ZKTeco'
+   - 'Securite' -> sous-catégories : 'Cable alarm', 'Alarme Ajax', 'ALARME HIKVISION', 'Alarme Autonome', 'Alarme Dahua', 'Cable incendie', 'Incendie Nugelec', 'Incendie Adressable', 'Incendie conventionnelle', 'Alarme incendie'
+   * IMPORTANT : Pour tout produit de stockage ou carte mémoire, la catégorie principale est TOUJOURS 'Materiel Informatique' et la sous-catégorie est 'Cartes memoire', 'HDD', 'SSDs', ou 'Stockage portable'.
+3. Style et ton :
+   - Professionnel, concis, direct, axé sur les chiffres et les résultats opérationnels.
+   - Dès qu'une action est exécutée, détaillez clairement dans votre réponse finale ce qui a été modifié (Nom, ID, nouveau stock, nouveau prix, nouveau statut, etc.).
+4. Catalogue complet des produits :
 ${productsListString}`;
     } else {
       const productsListString = dbProducts.map(p => 
@@ -242,41 +262,149 @@ ${productsListString}`;
 
     const candidateModels = [
       process.env.GEMINI_MODEL,
-      'gemini-3.5-flash',
+      'gemini-flash-latest',
+      'gemini-flash-lite-latest',
       'gemini-3.6-flash',
-      'gemini-flash-latest'
+      'gemini-3.7-flash',
+      'gemini-3.8-flash',
+      'gemini-3.5-flash'
     ].filter(Boolean);
 
     let replyText = null;
     let lastError = null;
+    let toolExecuted = false;
+    let actionSummary = null;
+
+    async function fetchGeminiWithRetry(url, options, maxRetries = 2) {
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        const res = await fetch(url, options);
+        if ((res.status === 503 || res.status === 429) && attempt < maxRetries) {
+          const delay = (attempt + 1) * 750;
+          console.warn(`[Chatbot] Gemini returned ${res.status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        return res;
+      }
+    }
 
     for (const model of candidateModels) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        const geminiResponse = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: geminiContents,
+        
+        let currentContents = [...geminiContents];
+        let loopCount = 0;
+        const maxIterations = 5;
+
+        while (loopCount < maxIterations) {
+          loopCount++;
+          const payload = {
+            contents: currentContents,
             systemInstruction: {
               parts: [{ text: systemInstructionText }]
             }
-          })
-        });
+          };
 
-        if (geminiResponse.ok) {
+          if (isAdmin && adminToolsSchema && adminToolsSchema.length > 0) {
+            payload.tools = [{ functionDeclarations: adminToolsSchema }];
+          }
+
+          const geminiResponse = await fetchGeminiWithRetry(geminiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!geminiResponse.ok) {
+            lastError = await geminiResponse.text();
+            console.warn(`[Chatbot] Model ${model} failed at iteration ${loopCount}:`, lastError);
+            if (toolExecuted && actionSummary) {
+              // The tool has already executed on DB. Use its confirmation message.
+              replyText = actionSummary.message || 'Action administrative exécutée avec succès.';
+              break;
+            }
+            break;
+          }
+
           const geminiData = await geminiResponse.json();
-          replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (replyText) break;
-        } else {
-          lastError = await geminiResponse.text();
-          console.warn(`[Chatbot] Model ${model} failed:`, lastError);
+          const candidate = geminiData.candidates?.[0];
+          const candidateContent = candidate?.content;
+
+          if (!candidateContent) {
+            lastError = 'No candidate content returned by Gemini';
+            if (toolExecuted && actionSummary) {
+              replyText = actionSummary.message || 'Action administrative exécutée avec succès.';
+              break;
+            }
+            break;
+          }
+
+          // Check if Gemini requested a functionCall
+          const functionCallPart = candidateContent.parts?.find(p => p.functionCall);
+
+          if (functionCallPart?.functionCall) {
+            const { name, args } = functionCallPart.functionCall;
+            console.log(`[Admin Agent] [Iter ${loopCount}] Executing tool: ${name} with args:`, args);
+
+            const handler = adminToolHandlers[name];
+            let toolResult = null;
+
+            if (typeof handler === 'function') {
+              try {
+                toolResult = await handler(args || {}, {
+                  prisma,
+                  transporter,
+                  baseUrl,
+                  logoUrl
+                });
+              } catch (execErr) {
+                console.error(`[Admin Agent] Error executing tool ${name}:`, execErr);
+                toolResult = { error: 'execution_error', message: execErr.message };
+              }
+            } else {
+              toolResult = { error: 'unknown_tool', message: `Outil ${name} introuvable.` };
+            }
+
+            toolExecuted = true;
+            actionSummary = toolResult;
+
+            // Push model turn and function response turn into conversation history
+            currentContents.push(candidateContent);
+            currentContents.push({
+              role: 'user',
+              parts: [
+                {
+                  functionResponse: {
+                    name,
+                    response: { output: toolResult }
+                  }
+                }
+              ]
+            });
+            // Continue the loop: Gemini will receive the result and produce a final response or call another tool
+          } else {
+            // Gemini returned regular textual answer
+            replyText = candidateContent.parts?.find(p => p.text)?.text;
+            break;
+          }
+        }
+
+        if (!replyText && toolExecuted && actionSummary) {
+          replyText = actionSummary.message || 'Action administrative exécutée avec succès.';
+        }
+
+        if (replyText) {
+          break; // Successfully handled request
         }
       } catch (err) {
         lastError = err.message;
         console.warn(`[Chatbot] Model ${model} request error:`, err);
+        if (toolExecuted && actionSummary) {
+          replyText = actionSummary.message || 'Action administrative exécutée avec succès.';
+          break;
+        }
       }
     }
 
@@ -285,7 +413,7 @@ ${productsListString}`;
       return res.status(502).json({ error: 'Failed to generate response from Gemini API', details: lastError });
     }
 
-    res.json({ reply: replyText });
+    res.json({ reply: replyText, toolExecuted, actionSummary });
   } catch (error) {
     next(error);
   }

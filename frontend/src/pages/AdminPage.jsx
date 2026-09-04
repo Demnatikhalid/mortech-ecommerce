@@ -54,13 +54,13 @@ const orderStatusLabels = {
   CANCELLED: 'Annulée',
 };
 
-function AdminAIAssistantSection({ stats, products, orders, claims }) {
+function AdminAIAssistantSection({ stats, products, orders, claims, onActionExecuted }) {
   const [messages, setMessages] = useState([
     {
       role: 'model',
       parts: [
         {
-          text: "Bonjour M. l'Administrateur ! Je suis votre Assistant IA de gestion Mortech Solution.\n\nJe suis connecté en direct aux données de votre boutique. Posez-moi des questions sur vos ventes, vos ruptures de stock, vos commandes en attente ou demandez-moi des conseils d'optimisation de catalogue et de gestion !"
+          text: "Bonjour M. l'Administrateur ! Je suis votre Agent IA Autonome de gestion Mortech Solution.\n\nJe suis habilité à exécuter des actions directes sur votre boutique :\n- 📦 **Produits & Stocks :** Ajouter, modifier, ajuster les stocks, changer les prix, supprimer des produits.\n- 📄 **Devis & Commandes :** Consulter, valider des devis et changer les statuts de livraison des commandes.\n- 🛠️ **SAV :** Traiter et résoudre les réclamations clients.\n- 👥 **Clients :** Créer, mettre à jour ou supprimer des comptes utilisateurs.\n\nDonnez-moi simplement vos instructions !"
         }
       ]
     }
@@ -98,7 +98,15 @@ function AdminAIAssistantSection({ stats, products, orders, claims }) {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'model', parts: [{ text: data.reply }] }]);
+      setMessages(prev => [...prev, {
+        role: 'model',
+        parts: [{ text: data.reply }],
+        toolExecuted: data.toolExecuted
+      }]);
+
+      if (data.toolExecuted && typeof onActionExecuted === 'function') {
+        onActionExecuted();
+      }
     } catch (err) {
       setError(err.message || 'Impossible de contacter l’Assistant IA.');
     } finally {
@@ -204,6 +212,23 @@ function AdminAIAssistantSection({ stats, products, orders, claims }) {
           {messages.map((msg, idx) => (
             <div key={idx} className={`chatbot-msg-row ${msg.role}`}>
               <div className="chatbot-msg-bubble">
+                {msg.toolExecuted && (
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#059669',
+                    background: '#ecfdf5',
+                    border: '1px solid #a7f3d0',
+                    padding: '2px 8px',
+                    borderRadius: '12px',
+                    marginBottom: '8px'
+                  }}>
+                    ⚡ Action exécutée (Base de données actualisée)
+                  </div>
+                )}
                 {formatMessage(msg.parts[0]?.text)}
               </div>
             </div>
@@ -556,6 +581,7 @@ const requests = [
             products={products}
             orders={orders}
             claims={claims}
+            onActionExecuted={loadData}
           />
         );
 

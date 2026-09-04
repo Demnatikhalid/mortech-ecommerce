@@ -40,3 +40,13 @@ export function shouldFilterSubcategory(groupName) {
     'Controle Dacces et Pointeuse',
   ].includes(groupName);
 }
+
+export function stripAccents(str) {
+  if (!str) return '';
+  return String(str)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+

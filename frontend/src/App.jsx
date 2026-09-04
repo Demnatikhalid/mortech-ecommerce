@@ -20,6 +20,7 @@ import {
   getRoute,
   getLocationKey,
   getCategoryUrl,
+  stripAccents,
 } from './helpers';
 
 export function App() {
@@ -127,32 +128,56 @@ export function App() {
 
   const filteredProducts = useMemo(() => {
     let sectionLinks = null;
-    if (activeSubcategory) {
+    const normActiveSub = stripAccents(activeSubcategory);
+    const normActiveCat = stripAccents(activeCategory);
+
+    if (normActiveSub) {
       for (const group of categoryGroups) {
         const sec = group.sections.find(
-          (s) => s.name.toLowerCase() === activeSubcategory.toLowerCase()
+          (s) => stripAccents(s.name) === normActiveSub
         );
         if (sec) {
-          sectionLinks = sec.links.map((l) => l.toLowerCase());
+          sectionLinks = sec.links.map((l) => stripAccents(l));
           break;
         }
       }
     }
 
+    const groupForActive = categoryGroups.find(
+      (g) => stripAccents(g.name) === normActiveCat
+    );
+
     return products.filter((product) => {
-      const matchesCategory = activeCategory === 'Tous' || product.category === activeCategory;
+      const normProdCat = stripAccents(product.category);
+      const normProdSub = stripAccents(product.subcategory);
+      const normProdBrand = stripAccents(product.brand);
+
+      // Matches category:
+      // 1. Tous
+      // 2. Exact match (normalized, ignore accents/casing)
+      // 3. Or product category belongs to active category group/sections
+      const matchesCategory =
+        activeCategory === 'Tous' ||
+        normProdCat === normActiveCat ||
+        (groupForActive && (
+          groupForActive.sections.some((s) => stripAccents(s.name) === normProdCat) ||
+          groupForActive.sections.some((s) => s.links.some((l) => stripAccents(l) === normProdCat))
+        ));
+
+      // Matches subcategory:
       const matchesSubcategory =
-        !activeSubcategory ||
-        product.subcategory === activeSubcategory ||
-        (product.subcategory &&
-          sectionLinks &&
-          sectionLinks.includes(product.subcategory.toLowerCase())) ||
-        (product.brand && product.brand.toLowerCase() === activeSubcategory.toLowerCase());
-      const matchesQuery = `${product.name} ${product.brand} ${product.category} ${
+        !normActiveSub ||
+        normProdSub === normActiveSub ||
+        normProdCat === normActiveSub ||
+        (normProdSub && sectionLinks && sectionLinks.includes(normProdSub)) ||
+        (normProdBrand && normProdBrand === normActiveSub);
+
+      const matchesQuery = `${product.name || ''} ${product.brand || ''} ${product.category || ''} ${
         product.subcategory || ''
       }`
         .toLowerCase()
         .includes(query.toLowerCase());
+
       return matchesCategory && matchesSubcategory && matchesQuery;
     });
   }, [products, activeCategory, activeSubcategory, query]);
