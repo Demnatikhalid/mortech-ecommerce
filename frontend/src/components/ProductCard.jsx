@@ -1,16 +1,21 @@
 import React from 'react';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, RotateCcw } from 'lucide-react';
 import { Link } from './Link';
-import { formatPrice } from '../helpers';
+import { formatPrice, hasProduct360View, getProductImageUrl } from '../helpers';
 
 export function ProductCard({ product, addToCart }) {
-  const rawImage = product.imageUrl || product.image || 'https://via.placeholder.com/420x280?text=Image+indisponible';
-  const imageUrl = typeof rawImage === 'string' ? encodeURI(rawImage) : rawImage;
+  const imageUrl = getProductImageUrl(product);
+  const has360 = hasProduct360View(product) || product.has360;
 
   return (
     <article className="product-card">
       <div className="product-media">
         {product.badge && <span className="badge">{product.badge}</span>}
+        {has360 && (
+          <span className="badge-360" title="Vue 360° interactive disponible">
+            <RotateCcw size={12} /> 360°
+          </span>
+        )}
         <Link to={`/produit/${product.id}`}>
           <img src={imageUrl} alt={product.name} />
         </Link>

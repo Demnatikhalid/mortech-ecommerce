@@ -91,13 +91,54 @@ export function App() {
     async function loadProducts() {
       try {
         setProductsLoading(true);
-        const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/products`
-);
-        if (!response.ok) throw new Error(response.statusText || 'Erreur');
-        const data = await response.json();
-        setProducts(data || []);
-        setProductsError(null);
+        let data = null;
+        const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        // In local development, use /products.json directly to prevent CORS errors with inactive remote deployments
+        if (isLocalDev) {
+          try {
+            const localRes = await fetch('/products.json');
+            if (localRes.ok) {
+              data = await localRes.json();
+            }
+          } catch (e) {
+            // fallback
+          }
+        }
+
+        // In production or if local file failed, try VITE_API_URL
+        if (!data || !data.length) {
+          const apiUrl = import.meta.env.VITE_API_URL;
+          if (apiUrl) {
+            try {
+              const response = await fetch(`${apiUrl}/api/products`);
+              if (response.ok) {
+                data = await response.json();
+              }
+            } catch (e) {
+              // remote error
+            }
+          }
+        }
+
+        // Final fallback to /products.json
+        if (!data || !data.length) {
+          try {
+            const fallbackRes = await fetch('/products.json');
+            if (fallbackRes.ok) {
+              data = await fallbackRes.json();
+            }
+          } catch (e) {
+            // fallback error
+          }
+        }
+
+        if (data && data.length) {
+          setProducts(data);
+          setProductsError(null);
+        } else {
+          throw new Error('Impossible de charger les produits');
+        }
       } catch (err) {
         setProductsError(err.message || 'Impossible de charger les produits');
       } finally {

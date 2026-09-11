@@ -4,7 +4,40 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="758b54c1-3c73-4d99-9d6a-c1e073887cc6" name="Changes" comment="" />
+    <list default="true" id="758b54c1-3c73-4d99-9d6a-c1e073887cc6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/backend/init-db.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/mime" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/mime.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/mime.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodemon" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodemon.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodemon.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodetouch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodetouch.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/nodetouch.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/prisma" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/prisma.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/prisma.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/semver" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/semver.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.bin/semver.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/libquery-engine" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/libquery-engine.gz.sha256" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/libquery-engine.sha256" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/schema-engine" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/schema-engine.gz.sha256" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/windows/schema-engine.sha256" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/default.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/default.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/deno/edge.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/edge.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/edge.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index-browser.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/node_modules/.prisma/client/package.json" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,29 +62,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kdemn/Desktop/mortech-ecommerce&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AcpAgentsConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/kdemn/Desktop/mortech-ecommerce",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.AcpAgentsConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\khali\WebstormProjects\untitled" />
@@ -82,6 +118,7 @@
       <workItem from="1780063544927" duration="3000" />
       <workItem from="1780751968128" duration="386000" />
       <workItem from="1780752738292" duration="4103000" />
+      <workItem from="1789151032230" duration="13000" />
     </task>
     <servers />
   </component>
