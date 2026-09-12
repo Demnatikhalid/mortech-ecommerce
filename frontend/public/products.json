@@ -21,7 +21,7 @@
     "badge": "2MP Dome",
     "image": "/assets/Dahua%20Camera%20IP%20Dome%202MP%20Wide%20View%20Night%20Vision-D91G_Eud.webp",
     "stock": true,
-    "imageUrl": "/assets/products/Dahua%20Camera%20IP%20Bullet%204MP%20PoE%20Full-color%20Network.webp"
+    "imageUrl": "/assets/products/Dahua%20Camera%20IP%20Dome%202MP%20Wide%20View%20Night%20Vision.webp"
   },
   {
     "id": 4,
@@ -33,7 +33,7 @@
     "badge": "IR 40m",
     "image": "/assets/Dahua%20Camera%20Analogique%205MP%20Turret%20IR%2040m-vfv_Ow_E.jpg",
     "stock": true,
-    "imageUrl": "/assets/products/Camera%20Analogique%205MP%20IR%2040m%20Bullet%20DS-2CE10KF0T-LFS.webp"
+    "imageUrl": "/assets/products/Dahua%20Camera%20Analogique%205MP%20Turret%20IR%2040m.jpg"
   },
   {
     "id": 5,
@@ -174,7 +174,8 @@
     "price": 1850,
     "badge": "Videophone",
     "image": "/assets/DS-KIS212-4-Wire-HD-Video-Intercom-Kit-Hikvision-1-min-20-aC4QW.webp",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/Videophone%20IP%20ecran%20tactile%207%20pouces%20avec%20interphone.png"
   },
   {
     "id": 27,
@@ -209,7 +210,8 @@
     "price": 1180,
     "badge": "RFID",
     "image": "/assets/hikvision-access-control-ds-k1t804amf-terminal-de-controle-d-acces-presence-avec-ecran-et-clavier-BtfgI9q4.jpg",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/Terminal%20controle%20d%27acces%20Hikvision%20badge%20RFID.png"
   },
   {
     "id": 30,
@@ -436,7 +438,8 @@
     "price": 1450,
     "badge": "24 ports",
     "image": "/assets/Switch%2024%20port-DBFem4an.jpeg",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/Switch%2024%20ports%20Gigabit%20pour%20baie%20reseau.jpg"
   },
   {
     "id": 53,
@@ -553,7 +556,8 @@
     "price": 450,
     "badge": "DDR4 16GB",
     "image": "/assets/Memoire%20RAM%20DDR4%208GB%203200MHz-C3IUbxyQ.jpg",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/RAM%20Kingston%2016GB%20DDR4%203200MHz%20UDIMM.png"
   },
   {
     "id": 68,
@@ -564,7 +568,8 @@
     "price": 1200,
     "badge": "SSD 1TB",
     "image": "/assets/SSD%20SATA%20480GB%20pour%20ordinateur%20portable-CeudSy-M.webp",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/SanDisk%20SSD%20Plus%201TB%20SATA%20III.jpg"
   },
   {
     "id": 69,
@@ -575,7 +580,8 @@
     "price": 1050,
     "badge": "Portable 2TB",
     "image": "/assets/Disque%20dur%20portable%20externe%202TB%20USB%203.0-CkJQ7FVz.webp",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/WD%20My%20Passport%20Disque%20dur%20externe%20portable%202TB.jpg"
   },
   {
     "id": 70,
@@ -586,6 +592,19 @@
     "price": 680,
     "badge": "HDD 1TB",
     "image": "/assets/Disque%20dur%20HDD%201TB%20SATA%203.5%20pouces-BMcujiIn.webp",
-    "stock": true
+    "stock": true,
+    "imageUrl": "/assets/products/WD%20Blue%20Disque%20dur%20interne%201TB%203.5%20pouces.png"
+  },
+  {
+    "id": 71,
+    "brand": "SanDisk",
+    "category": "Materiel Informatique",
+    "subcategory": "Cartes memoire",
+    "name": "Carte memoire microSD 128GB Classe 10",
+    "price": 180,
+    "badge": "128GB",
+    "image": "/assets/products/Carte%20memoire%20microSD%20128GB%20Classe%2010.png",
+    "stock": true,
+    "imageUrl": "/assets/products/Carte%20memoire%20microSD%20128GB%20Classe%2010.png"
   }
 ]

@@ -162,7 +162,7 @@ export const seedProducts = [
     badge: 'Videophone',
     price: 1850,
     stock: 6,
-    imageUrl: 'https://via.placeholder.com/420x280?text=Hikvision+Videophone'
+    imageUrl: '/assets/products/Videophone IP ecran tactile 7 pouces avec interphone.png'
   },
   {
     name: 'Dahua Videophone IP 7 pouces Ecran Tactile',
@@ -404,7 +404,7 @@ export const seedProducts = [
     badge: '24 ports',
     price: 1450,
     stock: 10,
-    imageUrl: 'https://via.placeholder.com/420x280?text=Switch+24+ports'
+    imageUrl: '/assets/products/Switch 24 ports Gigabit pour baie reseau.jpg'
   },
   {
     name: 'Box domotique Somfy TaHoma Switch',
@@ -514,7 +514,7 @@ export const seedProducts = [
     badge: 'DDR4 16GB',
     price: 450,
     stock: 30,
-    imageUrl: '/assets/products/Memoire RAM DDR4 8GB 3200MHz.jpg'
+    imageUrl: '/assets/products/RAM Kingston 16GB DDR4 3200MHz UDIMM.png'
   },
   {
     name: 'SanDisk SSD Plus 1TB SATA III',
@@ -525,7 +525,7 @@ export const seedProducts = [
     badge: 'SSD 1TB',
     price: 1200,
     stock: 28,
-    imageUrl: '/assets/products/SSD SATA 480GB pour ordinateur portable.webp'
+    imageUrl: '/assets/products/SanDisk SSD Plus 1TB SATA III.jpg'
   },
   {
     name: 'WD My Passport Disque dur externe portable 2TB',
@@ -536,7 +536,7 @@ export const seedProducts = [
     badge: 'Portable 2TB',
     price: 1050,
     stock: 22,
-    imageUrl: 'https://via.placeholder.com/420x280?text=WD+My+Passport+2TB'
+    imageUrl: '/assets/products/WD My Passport Disque dur externe portable 2TB.jpg'
   },
   {
     name: 'WD Blue Disque dur interne 1TB 3.5 pouces',
@@ -547,6 +547,17 @@ export const seedProducts = [
     badge: 'HDD 1TB',
     price: 680,
     stock: 32,
-    imageUrl: 'https://via.placeholder.com/420x280?text=WD+Blue+1TB'
+    imageUrl: '/assets/products/WD Blue Disque dur interne 1TB 3.5 pouces.png'
+  },
+  {
+    name: 'Carte memoire microSD 128GB Classe 10',
+    description: 'Carte memoire microSD 128GB Classe 10 pour camera, smartphone et stockage portable',
+    brand: 'SanDisk',
+    category: 'Materiel Informatique',
+    subcategory: 'Cartes memoire',
+    badge: '128GB',
+    price: 180,
+    stock: 25,
+    imageUrl: '/assets/products/Carte memoire microSD 128GB Classe 10.png'
   }
 ];
